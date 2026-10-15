@@ -3,19 +3,6 @@
   "name": "rjv-studios",
   "compatibility_date": "2026-10-15",
   "assets": {
-    "directory": "."
+    "directory": "./"
   }
-
-}
-
-{
-  // ...
-  "observability": {
-    "logs": {
-      "enabled": true,
-      "invocation_logs": true,
-      "persist": true
-    }
-  },
-  // ...
 }
