@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RJV Studios | Photography & Video Media Company</title>
+<meta name="description" content="RJV Studios is a media company offering commercial, real estate, portrait, concert and event photography and videography.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0b0c;
+    --bg-alt: #121214;
+    --card: #17171a;
+    --line: #26262b;
+    --text: #f2f0eb;
+    --muted: #9b9a97;
+    --accent: #c8a45c;
+    --accent-dark: #a8873f;
+    --radius: 14px;
+    --max: 1180px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; text-decoration: none; }
+  .container { width: 100%; max-width: var(--max); margin: 0 auto; padding: 0 24px; }
+  section { padding: 96px 0; }
+  h1, h2, h3 { font-family: 'Playfair Display', Georgia, serif; line-height: 1.15; }
+  .eyebrow {
+    display: inline-block;
+    font-size: .78rem;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+  .section-head { max-width: 640px; margin-bottom: 52px; }
+  .section-head h2 { font-size: clamp(2rem, 4vw, 2.9rem); margin-bottom: 14px; }
+  .section-head p { color: var(--muted); }
+
+  /* Buttons */
+  .btn {
+    display: inline-block;
+    padding: 14px 30px;
+    border-radius: 999px;
+    font-weight: 500;
+    font-size: .95rem;
+    border: 1px solid var(--accent);
+    transition: .25s ease;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .btn-primary { background: var(--accent); color: #111; }
+  .btn-primary:hover { background: var(--accent-dark); border-color: var(--accent-dark); }
+  .btn-ghost { background: transparent; color: var(--text); }
+  .btn-ghost:hover { background: rgba(200,164,92,.12); }
+
+  /* Header / nav (CSS-only mobile menu) */
+  header {
+    position: fixed; inset: 0 0 auto 0; z-index: 50;
+    background: rgba(11,11,12,.82);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav { display: flex; align-items: center; justify-content: space-between; height: 72px; }
+  .logo { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; letter-spacing: .04em; }
+  .logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 32px; list-style: none; align-items: center; }
+  .nav-links a { font-size: .9rem; color: var(--muted); transition: color .2s; }
+  .nav-links a:hover { color: var(--text); }
+  .nav-links .btn { padding: 10px 22px; color: #111; }
+  .nav-links .btn:hover { color: #111; }
+  #menu-toggle, .burger { display: none; }
+
+  /* Hero */
+  .hero {
+    min-height: 100vh;
+    display: flex; align-items: center;
+    padding-top: 120px;
+    background:
+      radial-gradient(900px 500px at 80% 10%, rgba(200,164,92,.16), transparent 60%),
+      radial-gradient(700px 500px at 5% 90%, rgba(90,110,160,.14), transparent 60%),
+      var(--bg);
+  }
+  .hero h1 { font-size: clamp(2.6rem, 7vw, 5.2rem); max-width: 14ch; margin-bottom: 24px; }
+  .hero h1 em { color: var(--accent); font-style: italic; }
+  .hero p { color: var(--muted); max-width: 560px; font-size: 1.1rem; margin-bottom: 38px; }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: 14px; }
+  .hero-stats { display: flex; flex-wrap: wrap; gap: 48px; margin-top: 72px; padding-top: 32px; border-top: 1px solid var(--line); }
+  .hero-stats strong { display: block; font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--accent); }
+  .hero-stats span { font-size: .85rem; color: var(--muted); }
+
+  /* Services */
+  .services { background: var(--bg-alt); }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .service {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 34px 30px;
+    transition: transform .25s ease, border-color .25s ease;
+  }
+  .service:hover { transform: translateY(-5px); border-color: var(--accent); }
+  .service .icon {
+    width: 46px; height: 46px; border-radius: 12px;
+    display: grid; place-items: center;
+    background: rgba(200,164,92,.12);
+    color: var(--accent); font-size: 1.3rem;
+    margin-bottom: 20px;
+  }
+  .service h3 { font-size: 1.35rem; margin-bottom: 10px; }
+  .service p { color: var(--muted); font-size: .95rem; }
+
+  /* Portfolio */
+  .filters { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 32px; }
+  .filters span {
+    font-size: .82rem; padding: 8px 18px; border-radius: 999px;
+    border: 1px solid var(--line); color: var(--muted);
+  }
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: 220px;
+    gap: 16px;
+  }
+  .tile {
+    position: relative; overflow: hidden;
+    border-radius: var(--radius);
+    background: linear-gradient(135deg, #2a2a30, #151518);
+    display: flex; align-items: flex-end;
+  }
+  .tile::before {
+    content: ""; position: absolute; inset: 0;
+    background-size: cover; background-position: center;
+    transition: transform .6s ease;
+  }
+  .tile:hover::before { transform: scale(1.07); }
+  .tile::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,.78), transparent 55%);
+  }
+  .tile .label { position: relative; z-index: 2; padding: 20px; }
+  .tile .label small { color: var(--accent); letter-spacing: .15em; text-transform: uppercase; font-size: .7rem; }
+  .tile .label h3 { font-size: 1.1rem; margin-top: 2px; }
+  .tile.wide { grid-column: span 2; }
+  .tile.tall { grid-row: span 2; }
+  /* Replace these gradients with your photos:
+     .t1::before { background-image: url('images/your-photo.jpg'); } */
+  .t2::before { background-image: linear-gradient(135deg, #1f2c3d, #0d1119); }
+  .t3::before { background-image: linear-gradient(135deg, #3d2230, #150b11); }
+  .t4::before { background-image: linear-gradient(135deg, #20382f, #0c1511); }
+  .t5::before { background-image: linear-gradient(135deg, #3a2a1c, #140e08); }
+  .t6::before { background-image: linear-gradient(135deg, #2b2540, #100d19); }
+  .t7::before { background-image: linear-gradient(135deg, #1d3a3d, #0a1516); }
+
+  /* Process */
+  .process { background: var(--bg-alt); }
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; counter-reset: step; }
+  .step { counter-increment: step; padding-top: 24px; border-top: 1px solid var(--line); }
+  .step::before {
+    content: "0" counter(step);
+    font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--accent);
+    display: block; margin-bottom: 10px;
+  }
+  .step h3 { font-size: 1.15rem; margin-bottom: 8px; }
+  .step p { color: var(--muted); font-size: .93rem; }
+
+  /* About */
+  .about-grid { display: block; max-width: 760px; }
+  .about-text h2 { font-size: clamp(2rem, 4vw, 2.7rem); margin-bottom: 20px; }
+  .about-text p { color: var(--muted); margin-bottom: 18px; }
+  .ticks { list-style: none; margin: 24px 0 32px; display: grid; gap: 10px; }
+  .ticks li::before { content: "✦"; color: var(--accent); margin-right: 12px; }
+
+  /* Contact */
+  .contact { background: var(--bg-alt); }
+  .contact-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 64px; }
+  .contact-info h2 { font-size: clamp(2rem, 4vw, 2.7rem); margin-bottom: 18px; }
+  .contact-info p { color: var(--muted); margin-bottom: 28px; }
+  .contact-info ul { list-style: none; display: grid; gap: 14px; }
+  .contact-info li span { display: block; font-size: .75rem; letter-spacing: .15em; text-transform: uppercase; color: var(--accent); }
+  form { display: grid; gap: 16px; background: var(--card); border: 1px solid var(--line); padding: 34px; border-radius: var(--radius); }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  label { font-size: .82rem; color: var(--muted); display: grid; gap: 6px; }
+  input, select, textarea {
+    background: var(--bg); border: 1px solid var(--line); color: var(--text);
+    padding: 13px 14px; border-radius: 10px; font: inherit; font-size: .95rem;
+  }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); }
+  textarea { min-height: 120px; resize: vertical; }
+
+  /* Footer */
+  footer { padding: 40px 0; border-top: 1px solid var(--line); color: var(--muted); font-size: .85rem; }
+  .foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; }
+
+  /* ===== Hover & transition effects ===== */
+
+  /* Logo + nav links: gold underline slides in */
+  .logo { transition: letter-spacing .35s ease, color .3s ease; }
+  .logo:hover { letter-spacing: .09em; }
+  .nav-links li:not(:last-child) a { position: relative; padding-bottom: 4px; }
+  .nav-links li:not(:last-child) a::after {
+    content: ""; position: absolute; left: 0; bottom: 0;
+    width: 100%; height: 1px; background: var(--accent);
+    transform: scaleX(0); transform-origin: right;
+    transition: transform .35s ease;
+  }
+  .nav-links li:not(:last-child) a:hover::after { transform: scaleX(1); transform-origin: left; }
+
+  /* Buttons: lift, glow and press */
+  .btn { transition: transform .3s ease, box-shadow .3s ease, background .3s ease, color .3s ease, border-color .3s ease; }
+  .btn:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(200,164,92,.28); }
+  .btn:active { transform: translateY(-1px) scale(.98); }
+  .btn-ghost:hover { border-color: var(--text); }
+
+  /* Hero: staggered entrance on page load */
+  @keyframes fadeUp {
+    from { opacity: 0; translate: 0 32px; }
+    to   { opacity: 1; translate: 0 0; }
+  }
+  .hero .eyebrow, .hero h1, .hero p, .hero-actions, .hero-stats {
+    animation: fadeUp .9s cubic-bezier(.2,.7,.2,1) both;
+  }
+  .hero h1 { animation-delay: .12s; }
+  .hero p { animation-delay: .26s; }
+  .hero-actions { animation-delay: .4s; }
+  .hero-stats { animation-delay: .55s; }
+  .hero-stats div { transition: transform .3s ease; }
+  .hero-stats div:hover { transform: translateY(-4px); }
+
+  /* Service cards: lift, glow, icon spin */
+  .service {
+    transition: transform .35s ease, border-color .35s ease, box-shadow .35s ease, background .35s ease;
+  }
+  .service:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 18px 40px rgba(0,0,0,.45), 0 0 0 1px rgba(200,164,92,.25);
+    background: linear-gradient(180deg, #1c1b1a, var(--card));
+  }
+  .service .icon { transition: transform .4s ease, background .3s ease, color .3s ease; }
+  .service:hover .icon { transform: rotate(-8deg) scale(1.12); background: var(--accent); color: #111; }
+  .service h3 { transition: color .3s ease; }
+  .service:hover h3 { color: var(--accent); }
+
+  /* Portfolio tiles: zoom, brighten, label slides up, arrow appears */
+  .tile { transition: box-shadow .4s ease, transform .4s ease; }
+  .tile:hover { transform: translateY(-4px); box-shadow: 0 18px 40px rgba(0,0,0,.5); }
+  .tile::before { transition: transform .7s cubic-bezier(.2,.7,.2,1), filter .5s ease; }
+  .tile:hover::before { filter: brightness(1.25) saturate(1.2); }
+  .tile .label { transition: transform .4s ease; transform: translateY(8px); }
+  .tile:hover .label { transform: translateY(0); }
+  .tile .label h3::after {
+    content: " →"; display: inline-block; color: var(--accent);
+    opacity: 0; transform: translateX(-8px);
+    transition: opacity .3s ease, transform .3s ease;
+  }
+  .tile:hover .label h3::after { opacity: 1; transform: translateX(0); }
+
+  /* Filters */
+  .filters span { transition: all .25s ease; cursor: pointer; }
+  .filters span:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+
+  /* Process steps */
+  .step { transition: transform .3s ease, border-color .3s ease; }
+  .step:hover { transform: translateY(-6px); border-top-color: var(--accent); }
+  .step::before { transition: transform .3s ease; }
+  .step:hover::before { transform: translateX(6px); }
+
+  /* About list */
+  .ticks li { transition: transform .25s ease, color .25s ease; }
+  .ticks li:hover { transform: translateX(8px); color: var(--accent); }
+
+  /* Contact info + form fields */
+  .contact-info li { transition: transform .25s ease; }
+  .contact-info li:hover { transform: translateX(6px); }
+  input, select, textarea { transition: border-color .25s ease, box-shadow .25s ease, transform .25s ease; }
+  input:hover, select:hover, textarea:hover { border-color: #3a3a41; }
+  input:focus, select:focus, textarea:focus {
+    box-shadow: 0 0 0 3px rgba(200,164,92,.18);
+  }
+  form { transition: border-color .35s ease, box-shadow .35s ease; }
+  form:hover { border-color: #34343a; box-shadow: 0 20px 50px rgba(0,0,0,.35); }
+
+  /* Footer text */
+  .foot span { transition: color .25s ease; }
+  .foot span:hover { color: var(--accent); }
+
+  /* Scroll-reveal: sections fade and slide in as they enter view
+     (supported browsers only; others simply show content normally) */
+  @supports (animation-timeline: view()) {
+    @keyframes reveal {
+      from { opacity: 0; translate: 0 48px; }
+      to   { opacity: 1; translate: 0 0; }
+    }
+    .section-head, .service, .step, .tile, .filters,
+    .about-text, .contact-info, form {
+      animation: reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 45%;
+    }
+  }
+
+  /* ===== Hero background slideshow (display only) ===== */
+  .hero { position: relative; overflow: hidden; }
+  .hero > .container { position: relative; z-index: 2; }
+  .hero-slides {
+    position: absolute; inset: 0; z-index: 0;
+    pointer-events: none;      /* not clickable */
+    user-select: none;
+  }
+  /* dark layer so the text stays readable over your photos */
+  .hero-slides::after {
+    content: ""; position: absolute; inset: 0; z-index: 2;
+    background:
+      linear-gradient(90deg, rgba(11,11,12,.88) 0%, rgba(11,11,12,.55) 55%, rgba(11,11,12,.35) 100%),
+      linear-gradient(to top, var(--bg) 0%, transparent 28%);
+  }
+  .slide {
+    position: absolute; inset: 0;
+    background-size: cover; background-position: center;
+    opacity: 0;
+    /* 5 slides x 6s each = 30s loop. If you change the slide count,
+       change 30s below to (number of slides x 6s) and update the delays. */
+    animation: slideFade 30s infinite, slideZoom 30s infinite;
+  }
+  .s1 { animation-delay: 0s; }
+  .s2 { animation-delay: 6s; }
+  .s3 { animation-delay: 12s; }
+  .s4 { animation-delay: 18s; }
+  .s5 { animation-delay: 24s; }
+  @keyframes slideFade {
+    0%   { opacity: 0; }
+    4%   { opacity: 1; }
+    20%  { opacity: 1; }
+    24%  { opacity: 0; }
+    100% { opacity: 0; }
+  }
+  @keyframes slideZoom {
+    0%   { transform: scale(1); }
+    24%  { transform: scale(1.12); }
+    100% { transform: scale(1.12); }
+  }
+  /* Swap each gradient for your photo: background-image: url('images/photo1.jpg'); */
+  .s1 { background-image: linear-gradient(135deg, #4a3d22, #17130b); }
+  .s2 { background-image: linear-gradient(135deg, #1f3550, #0b1018); }
+  .s3 { background-image: linear-gradient(135deg, #4a2438, #160b11); }
+  .s4 { background-image: linear-gradient(135deg, #1f4a3a, #0b1713); }
+  .s5 { background-image: linear-gradient(135deg, #3a2f54, #110e1a); }
+
+  /* Respect users who prefer reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation: none !important;
+      transition: none !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .slide.s1 { opacity: 1; }
+  }
+
+  /* Responsive */
+  @media (max-width: 960px) {
+    .grid-3 { grid-template-columns: repeat(2, 1fr); }
+    .gallery { grid-template-columns: repeat(2, 1fr); }
+    .steps { grid-template-columns: repeat(2, 1fr); }
+    .contact-grid { grid-template-columns: 1fr; gap: 40px; }
+  }
+  @media (max-width: 720px) {
+    section { padding: 72px 0; }
+    .burger { display: block; cursor: pointer; font-size: 1.6rem; }
+    .nav-links {
+      position: absolute; top: 72px; left: 0; right: 0;
+      flex-direction: column; gap: 0;
+      background: var(--bg); border-bottom: 1px solid var(--line);
+      max-height: 0; overflow: hidden; transition: max-height .3s ease;
+    }
+    .nav-links li { width: 100%; padding: 14px 24px; border-top: 1px solid var(--line); }
+    #menu-toggle:checked ~ .nav-links { max-height: 420px; }
+    .grid-3, .steps, .row { grid-template-columns: 1fr; }
+    .gallery { grid-template-columns: 1fr; grid-auto-rows: 240px; }
+    .tile.wide { grid-column: auto; }
+    .tile.tall { grid-row: auto; }
+    .hero-stats { gap: 28px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container nav">
+    <a href="#home" class="logo">RJV<span>.</span>Studios</a>
+    <input type="checkbox" id="menu-toggle">
+    <label for="menu-toggle" class="burger" aria-label="Toggle menu">☰</label>
+    <ul class="nav-links">
+      <li><a href="#services">Services</a></li>
+      <li><a href="#work">Work</a></li>
+      <li><a href="#process">Process</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact" class="btn btn-primary">Book a Shoot</a></li>
+    </ul>
+  </div>
+</header>
+
+<main id="home">
+
+  <!-- HERO -->
+  <section class="hero">
+    <!-- Background slideshow (display only, not clickable).
+         To use your own work: open the CSS, find ".s1 ... .s5" and swap each gradient for
+         background-image: url('images/your-photo.jpg');
+         To add more slides, copy a <div> below, add a class like s6, and see the CSS comments. -->
+    <div class="hero-slides" aria-hidden="true">
+      <div class="slide s1"></div>
+      <div class="slide s2"></div>
+      <div class="slide s3"></div>
+      <div class="slide s4"></div>
+      <div class="slide s5"></div>
+    </div>
+    <div class="container">
+      <span class="eyebrow">Photography &amp; Video Media Company</span>
+      <h1>We capture the <em>moment</em> that moves your brand.</h1>
+      <p>RJV Studios is a full-service media company producing commercial, real estate, portrait, concert and event content that looks sharp and gets results.</p>
+      <div class="hero-actions">
+        <a href="#contact" class="btn btn-primary">Get a Quote</a>
+        <a href="#work" class="btn btn-ghost">View Our Work</a>
+      </div>
+      <div class="hero-stats">
+        <div><strong>6+</strong><span>Specialist niches</span></div>
+        <div><strong>Photo + Video</strong><span>One studio, one team</span></div>
+        <div><strong>Fast</strong><span>Turnaround on delivery</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section class="services" id="services">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">What we do</span>
+        <h2>Media built around your needs</h2>
+        <p>From a single headshot to a full production, every project gets the same cinematic eye and professional finish.</p>
+      </div>
+      <div class="grid-3">
+        <article class="service">
+          <div class="icon">◼</div>
+          <h3>Commercial</h3>
+          <p>Brand, product and corporate imagery and video that elevates your business across web, social and print.</p>
+        </article>
+        <article class="service">
+          <div class="icon">⌂</div>
+          <h3>Real Estate</h3>
+          <p>Crisp interior and exterior photography, video walkthroughs and aerial shots that help listings stand out and sell faster.</p>
+        </article>
+        <article class="service">
+          <div class="icon">☺</div>
+          <h3>Portraits</h3>
+          <p>Headshots, personal branding, creative and lifestyle portraits that feel natural and confident.</p>
+        </article>
+        <article class="service">
+          <div class="icon">♪</div>
+          <h3>Concerts</h3>
+          <p>High-energy live music coverage, from the stage to the crowd, with fast edits for artists, promoters and venues.</p>
+        </article>
+        <article class="service">
+          <div class="icon">✦</div>
+          <h3>Events</h3>
+          <p>Launches, parties, corporate functions and celebrations documented with candid, polished storytelling.</p>
+        </article>
+        <article class="service">
+          <div class="icon">＋</div>
+          <h3>And More</h3>
+          <p>Social media content, promo videos and bespoke projects. Tell us your idea and we'll shape it.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- PORTFOLIO -->
+  <section id="work">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Selected work</span>
+        <h2>A look at the portfolio</h2>
+        <p>Swap the placeholder tiles below for your own photos. Instructions are in the CSS comments.</p>
+      </div>
+      <div class="filters">
+        <span>Commercial</span><span>Real Estate</span><span>Portraits</span><span>Concerts</span><span>Events</span>
+      </div>
+      <div class="gallery">
+        <a class="tile t2" href="#contact"><div class="label"><small>Real Estate</small><h3>Modern Apartment</h3></div></a>
+        <a class="tile t3" href="#contact"><div class="label"><small>Portraits</small><h3>Studio Headshots</h3></div></a>
+        <a class="tile t4 wide" href="#contact"><div class="label"><small>Concerts</small><h3>Live Show Coverage</h3></div></a>
+        <a class="tile t5" href="#contact"><div class="label"><small>Events</small><h3>Launch Night</h3></div></a>
+        <a class="tile t6" href="#contact"><div class="label"><small>Portraits</small><h3>Lifestyle Session</h3></div></a>
+        <a class="tile t7 wide" href="#contact"><div class="label"><small>Real Estate</small><h3>Exterior &amp; Aerial</h3></div></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESS -->
+  <section class="process" id="process">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">How it works</span>
+        <h2>Simple from first message to final delivery</h2>
+      </div>
+      <div class="steps">
+        <div class="step"><h3>Enquire</h3><p>Tell us about your project, date and goals. We'll reply with a clear quote.</p></div>
+        <div class="step"><h3>Plan</h3><p>We agree the shot list, locations, timing and style so shoot day runs smoothly.</p></div>
+        <div class="step"><h3>Shoot</h3><p>We arrive prepared, direct where needed and capture everything you need.</p></div>
+        <div class="step"><h3>Deliver</h3><p>Edited, colour-graded files delivered through a private online gallery.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="container about-grid">
+      <div class="about-text">
+        <span class="eyebrow">About RJV Studios</span>
+        <h2>A media company, not just a camera</h2>
+        <p>RJV Studios, part of Walker Visuals, is a London-based photography and videography company working with businesses, agents, artists and individuals who want visuals that perform.</p>
+        <p>We treat every job like a commercial production: clear communication, reliable delivery and a consistent, premium look across everything we make.</p>
+        <ul class="ticks">
+          <li>Photography and video under one roof</li>
+          <li>Professional gear and lighting for every setting</li>
+          <li>Quick, dependable turnaround</li>
+        </ul>
+        <a href="#contact" class="btn btn-primary">Work With Us</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="contact" id="contact">
+    <div class="container contact-grid">
+      <div class="contact-info">
+        <span class="eyebrow">Get in touch</span>
+        <h2>Let's create something great</h2>
+        <p>Share a few details and we'll get back to you with availability and pricing.</p>
+        <ul>
+          <li><span>Email</span>hello@yourdomain.com</li>
+          <li><span>Instagram</span>@yourhandle</li>
+          <li><span>Location</span>London, UK</li>
+        </ul>
+      </div>
+      <!-- Connect this form to Formspree, Netlify Forms or your own backend by editing the action attribute -->
+      <form action="#" method="post">
+        <div class="row">
+          <label>Name<input type="text" name="name" required></label>
+          <label>Email<input type="email" name="email" required></label>
+        </div>
+        <div class="row">
+          <label>Service
+            <select name="service">
+              <option>Commercial</option>
+              <option>Real Estate</option>
+              <option>Portraits</option>
+              <option>Concerts</option>
+              <option>Events</option>
+              <option>Other</option>
+            </select>
+          </label>
+          <label>Date<input type="date" name="date"></label>
+        </div>
+        <label>Project details<textarea name="message" placeholder="Tell us about your shoot..."></textarea></label>
+        <button type="submit" class="btn btn-primary">Send Enquiry</button>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="container foot">
+    <span>© 2026 RJV Studios · A Walker Visuals brand</span>
+    <span>Photography · Video · Media</span>
+  </div>
+</footer>
+
+</body>
+</html>
