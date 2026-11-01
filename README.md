@@ -38,7 +38,7 @@ RJV-studios/
 - **Portfolio:** category cards linking to the relevant gallery.
 - **Process:** enquiry, planning, shoot and delivery.
 - **About:** studio introduction and working approach.
-- **Contact:** contact details and enquiry form layout.
+- **Contact:** contact details and an enquiry form prepared for Formspree submissions.
 
 ## 3. How to add background images
 
@@ -101,6 +101,6 @@ If using a custom domain, configure the domain in your hosting provider and add 
 
 ## 7. Important notes
 
-- The enquiry form in `index.html` is a front-end layout only. Connect it to Formspree, Netlify Forms or a backend before accepting real enquiries.
+- The contact form in `index.html` is prepared for Formspree. Replace `YOUR_FORM_ID` in the form action with the endpoint ID from your Formspree account before accepting real enquiries. See `docs/FORMSPREE-SETUP.md` for setup steps. The Formspree endpoint is not active until that ID is added.
 - Use only photographs and logos you own or have permission to publish.
 - Keep image filenames lowercase and use hyphens instead of spaces.
