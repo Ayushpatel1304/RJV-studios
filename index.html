@@ -178,7 +178,7 @@
           <label for="enquiry-email">Email<input id="enquiry-email" type="email" name="email" autocomplete="email" required></label>
         </div>
         <div class="row">
-          <label for="enquiry-phone">Contact number<input id="enquiry-phone" type="tel" name="phone" autocomplete="tel" inputmode="tel" placeholder="e.g. +44 7700 900000" required></label>
+          <label for="enquiry-phone">Contact number<input id="enquiry-phone" type="tel" name="phone" autocomplete="tel" inputmode="tel" pattern="\+?[0-9() -]{6,19}" maxlength="20" title="Use 7–20 characters: digits, an optional leading +, spaces, hyphens or brackets." placeholder="e.g. +44 7700 900000" required></label>
           <label for="enquiry-service">Service
             <select id="enquiry-service" name="service" required>
               <option value="" selected disabled>Choose a service</option>
@@ -190,7 +190,7 @@
               <option>Other</option>
             </select>
           </label>
-          <label for="enquiry-date">Preferred date<input id="enquiry-date" type="date" name="preferred_date"></label>
+          <label for="enquiry-date">Preferred date<input id="enquiry-date" type="text" name="preferred_date" inputmode="numeric" autocomplete="off" placeholder="DD/MM/YYYY" pattern="[0-9]{2}/[0-9]{2}/[0-9]{4}" maxlength="10" title="Enter a future date in DD/MM/YYYY format."></label>
         </div>
         <label for="enquiry-message">Project details<textarea id="enquiry-message" name="message" placeholder="Tell us about your shoot..." rows="5" required></textarea></label>
         <input type="hidden" name="_subject" value="New RJV Studios website enquiry">
