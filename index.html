@@ -170,15 +170,16 @@
           <li><span>Location</span>London, UK</li>
         </ul>
       </div>
-      <!-- Connect this form to Formspree, Netlify Forms or your own backend by editing the action attribute -->
-      <form action="#" method="post">
+      <!-- Formspree: replace YOUR_FORM_ID with the endpoint ID from your Formspree dashboard. -->
+      <form action="https://formspree.io/f/YOUR_FORM_ID" method="POST" accept-charset="UTF-8">
         <div class="row">
-          <label>Name<input type="text" name="name" required></label>
-          <label>Email<input type="email" name="email" required></label>
+          <label for="enquiry-name">Name<input id="enquiry-name" type="text" name="name" autocomplete="name" required></label>
+          <label for="enquiry-email">Email<input id="enquiry-email" type="email" name="email" autocomplete="email" required></label>
         </div>
         <div class="row">
-          <label>Service
-            <select name="service">
+          <label for="enquiry-service">Service
+            <select id="enquiry-service" name="service" required>
+              <option value="" selected disabled>Choose a service</option>
               <option>Commercial</option>
               <option>Real Estate</option>
               <option>Portraits</option>
@@ -187,9 +188,13 @@
               <option>Other</option>
             </select>
           </label>
-          <label>Date<input type="date" name="date"></label>
+          <label for="enquiry-date">Preferred date<input id="enquiry-date" type="date" name="preferred_date"></label>
         </div>
-        <label>Project details<textarea name="message" placeholder="Tell us about your shoot..."></textarea></label>
+        <label for="enquiry-message">Project details<textarea id="enquiry-message" name="message" placeholder="Tell us about your shoot..." rows="5" required></textarea></label>
+        <input type="hidden" name="_subject" value="New RJV Studios website enquiry">
+        <div class="form-trap" aria-hidden="true">
+          <label>Leave this field empty<input type="text" name="_gotcha" tabindex="-1" autocomplete="off"></label>
+        </div>
         <button type="submit" class="btn btn-primary">Send Enquiry</button>
       </form>
     </div>
