@@ -5,6 +5,12 @@
 - **Backgrounds** are decorative images used behind the homepage hero or category cards. They live in `images/backgrounds/`.
 - **Gallery photographs** are the actual work visitors browse and open in the lightbox. They live in `images/galleries/`.
 
+## No limit on gallery photographs
+
+There is **no six-photo limit** for any gallery category. You can add as many photographs as you need to Commercial, Real Estate, Portraits, Concerts and Events.
+
+The gallery displays every photo entry listed in the matching category's `photos` array in `assets/js/gallery.js`. The six entries currently shown in each category are starter examples, not a maximum.
+
 ## Recommended upload names
 
 ### Hero backgrounds
@@ -19,7 +25,26 @@
 `images/backgrounds/portfolio/real-estate-cover-02.webp`
 
 ### Gallery photographs
-Upload into the matching category folder. The filenames and captions are listed in `assets/js/gallery.js`.
+Upload each photograph into its matching category folder:
+
+- `images/galleries/commercial/`
+- `images/galleries/real-estate/`
+- `images/galleries/portraits/`
+- `images/galleries/concerts/`
+- `images/galleries/events/`
+
+Then add an entry for each new image to that category's `photos` array in `assets/js/gallery.js`. For example:
+
+```js
+photos: [
+  ["First photograph", "images/galleries/events/event-01.webp"],
+  ["Second photograph", "images/galleries/events/event-02.webp"],
+  ["Another photograph", "images/galleries/events/event-07.webp"],
+  ["One more photograph", "images/galleries/events/event-08.webp"]
+]
+```
+
+Keep adding entries separated by commas. There is no fixed maximum; the gallery grid and lightbox navigation include all entries automatically.
 
 ## Image recommendations
 
