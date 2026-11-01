@@ -1,6 +1,8 @@
 /* RJV STUDIOS — GALLERY CONTENT
-   Add your photographs to the matching images/galleries/<category>/ folder.
-   Then update the filenames in this file. Paths are relative to the website root.
+   Add as many photographs as you like to each category — there is no six-photo limit.
+   Upload files to images/galleries/<category>/, then add one [caption, path] entry
+   per photograph in the matching photos array below. Paths are relative to the website root.
+   The gallery renders every entry in each array; do not remove entries to stay under a limit.
 */
 const collections = {
   "real-estate": {
@@ -78,7 +80,7 @@ if (collection) {
   document.title = collection.title + " Gallery | RJV Studios";
   title.textContent = collection.title;
   description.textContent = collection.description;
-  count.textContent = collection.photos.length + " image slots";
+  count.textContent = collection.photos.length + (collection.photos.length === 1 ? " image" : " images");
   collection.photos.forEach(([caption, src], index) => {
     const figure = document.createElement("figure");
     figure.className = "photo";
