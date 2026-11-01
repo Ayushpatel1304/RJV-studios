@@ -12,7 +12,8 @@ RJV-studios/
 ├── LICENSE
 ├── assets/
 │   ├── css/
-│   │   └── styles.css            # Shared styles for both pages
+│   │   ├── styles.css            # Shared homepage and global styles
+│   │   └── gallery.css           # Gallery page layout and lightbox styles
 │   └── js/
 │       ├── main.js               # Shared navigation interactions
 │       └── gallery.js            # Gallery categories, images and lightbox
@@ -56,6 +57,7 @@ Upload the following files to `images/backgrounds/portfolio/`:
 - `portraits-cover.webp`
 - `concerts-cover.webp`
 - `events-cover.webp`
+- `commercial-cover.webp`
 - `portraits-cover-02.webp`
 - `real-estate-cover-02.webp`
 
@@ -84,7 +86,8 @@ Add more photos by copying a photo entry in `assets/js/gallery.js` and changing 
 ## 5. Where to edit the website
 
 - Text, headings, services, contact details and homepage layout: `index.html`
-- Colours, typography, layout, hover effects, slideshow and portfolio-card images: `assets/css/styles.css`
+- Colours, typography, homepage layout, hover effects, slideshow and portfolio-card images: `assets/css/styles.css`
+- Gallery layout and lightbox presentation: `assets/css/gallery.css`
 - Gallery categories, captions and gallery image paths: `assets/js/gallery.js`
 - Shared navigation behaviour: `assets/js/main.js`
 - Background images: `images/backgrounds/`
