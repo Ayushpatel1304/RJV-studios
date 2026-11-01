@@ -350,7 +350,7 @@
   .t3::before { background-image: url("../../images/backgrounds/portfolio/portraits-cover.webp"); }
   .t4::before { background-image: url("../../images/backgrounds/portfolio/concerts-cover.webp"); }
   .t5::before { background-image: url("../../images/backgrounds/portfolio/events-cover.webp"); }
-  .t6::before { background-image: url("../../images/backgrounds/portfolio/portraits-cover-02.webp"); }
+  .t6::before { background-image: url("../../images/backgrounds/portfolio/commercial-cover.webp"); }
   .t7::before { background-image: url("../../images/backgrounds/portfolio/real-estate-cover-02.webp"); }
 
   /* Respect users who prefer reduced motion */
