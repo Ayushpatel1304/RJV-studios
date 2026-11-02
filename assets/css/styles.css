@@ -390,3 +390,120 @@
     .tile.tall { grid-row: auto; }
     .hero-stats { gap: 28px; }
   }
+
+
+/* =====================================================
+   RJV STUDIOS — GLASSMORPHISM REDESIGN
+   Frosted navigation, floating glass cards and soft light.
+   ===================================================== */
+:root {
+  --glass-bg: rgba(255,255,255,.055);
+  --glass-bg-strong: rgba(255,255,255,.085);
+  --glass-border: rgba(255,255,255,.13);
+  --glass-shadow: 0 18px 55px rgba(0,0,0,.28);
+  --glass-blur: 18px;
+}
+body {
+  background:
+    radial-gradient(ellipse at 12% 8%, rgba(200,164,92,.13), transparent 34rem),
+    radial-gradient(ellipse at 88% 34%, rgba(115,129,164,.10), transparent 32rem),
+    radial-gradient(ellipse at 50% 92%, rgba(200,164,92,.07), transparent 38rem),
+    var(--bg);
+  background-attachment: fixed;
+}
+header {
+  position: sticky;
+  top: 14px;
+  z-index: 100;
+  margin: 14px auto 0;
+  width: min(calc(100% - 32px), var(--max));
+  border: 1px solid var(--glass-border);
+  border-radius: 18px;
+  background: rgba(17,17,20,.68);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(145%);
+  backdrop-filter: blur(var(--glass-blur)) saturate(145%);
+  box-shadow: 0 12px 40px rgba(0,0,0,.22);
+}
+header .nav { min-height: 70px; }
+.nav-links a { transition: color .25s ease, opacity .25s ease; }
+.nav-links a:hover { color: #f0d69e; }
+.btn, button, input[type="submit"] {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid rgba(220,190,130,.48);
+  background: rgba(200,164,92,.12);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 8px 26px rgba(0,0,0,.18);
+}
+.btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(115deg, rgba(255,255,255,.16), transparent 52%);
+  opacity: .65;
+  pointer-events: none;
+}
+.btn:hover, button:hover, input[type="submit"]:hover {
+  background: rgba(200,164,92,.25);
+  border-color: rgba(240,214,158,.75);
+  box-shadow: 0 12px 32px rgba(200,164,92,.14), inset 0 1px 0 rgba(255,255,255,.18);
+  transform: translateY(-2px);
+}
+.tile, .card, .service-card, .portfolio-card, .contact-card, .about-card {
+  border: 1px solid var(--glass-border);
+  background-color: var(--glass-bg);
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  backdrop-filter: blur(var(--glass-blur));
+  box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255,255,255,.08);
+}
+.tile { overflow: hidden; }
+.tile::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(135deg, rgba(255,255,255,.11), transparent 38%, rgba(200,164,92,.06));
+  opacity: .8;
+}
+form, .contact-form, .about-panel, .glass-panel {
+  border: 1px solid var(--glass-border);
+  border-radius: 22px;
+  background: linear-gradient(145deg, rgba(255,255,255,.075), rgba(255,255,255,.025));
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255,255,255,.10);
+}
+input, select, textarea {
+  background: rgba(5,5,7,.42);
+  border-color: rgba(255,255,255,.15);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: rgba(200,164,92,.75);
+  box-shadow: 0 0 0 3px rgba(200,164,92,.12);
+}
+section { position: relative; }
+section::before {
+  content: "";
+  position: absolute;
+  width: min(38vw, 420px);
+  height: min(38vw, 420px);
+  border-radius: 50%;
+  top: 8%;
+  right: -12%;
+  background: radial-gradient(circle, rgba(200,164,92,.075), transparent 68%);
+  filter: blur(18px);
+  pointer-events: none;
+  z-index: -1;
+}
+@media (max-width: 760px) {
+  header { top: 8px; margin-top: 8px; width: calc(100% - 16px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
