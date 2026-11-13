@@ -1,6 +1,6 @@
 # Browser regression checks
 
-The site needs no build or runtime dependencies. For development checks, use Python 3.10+:
+Vercel runs the dependency-free Node.js packaging script in `scripts/build.mjs` and publishes `dist/`. For development checks, use Node.js 22+ and Python 3.10+:
 
 ```sh
 python3 -m venv .venv
@@ -15,10 +15,17 @@ instructions or use `python -m playwright install --with-deps chromium` on a
 machine where you can install system packages. The tests use system Chromium
 when available, otherwise the Playwright-managed Chromium.
 
-Tests start a temporary local HTTP server, block external fonts, and intercept
-the contact form's POST request. They never send a real enquiry. They check:
+The suite reads `vercel.json`, runs its build command, and starts a temporary
+local HTTP server serving its output directory. All browser checks exercise
+these deployment files rather than the repository root. The suite blocks
+external fonts and intercepts the contact form's POST request; it never sends
+a real enquiry or contacts Vercel. Live Vercel routing, domain and DNS settings
+are outside these local checks.
 
-- Every uploaded gallery photograph is listed and decodes successfully.
+The checks cover:
+
+- A clean, repeatable Vercel build containing only public website files; tests and local settings return 404.
+- The root homepage, existing `.html` gallery links and all uploaded photographs loading successfully.
 - Empty and unknown categories, including inherited object-property names.
 - Local asset requests and horizontal layout at phone, tablet and desktop widths.
 - Keyboard and mobile navigation on both pages.

@@ -1,10 +1,14 @@
-"""Browser regressions for the static site; no real form submissions are sent."""
+"""Regressions against Vercel's static build output; no real enquiries are sent."""
 
 import functools
+import hashlib
+import json
 from datetime import date, timedelta
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 import shutil
+import shlex
+import subprocess
 import threading
 import unittest
 from urllib.parse import parse_qs
@@ -27,11 +31,15 @@ class QuietHandler(SimpleHTTPRequestHandler):
             pass
 
 
-class SiteTests(unittest.TestCase):
+class VercelSiteTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        cls.config = json.loads((ROOT / "vercel.json").read_text())
+        cls.output = ROOT / cls.config["outputDirectory"]
+        cls.build_command = shlex.split(cls.config["buildCommand"])
+        subprocess.run(cls.build_command, cwd=ROOT, check=True)
         cls.server = ThreadingHTTPServer(
-            ("127.0.0.1", 0), functools.partial(QuietHandler, directory=str(ROOT))
+            ("127.0.0.1", 0), functools.partial(QuietHandler, directory=str(cls.output))
         )
         cls.server_thread = threading.Thread(target=cls.server.serve_forever, daemon=True)
         cls.server_thread.start()
@@ -81,6 +89,33 @@ class SiteTests(unittest.TestCase):
     def visit(self, path="index.html"):
         self.page.goto(self.base + path)
 
+    def test_vercel_build_output(self):
+        self.assertIsNone(self.config["framework"])
+        self.assertEqual(self.config["installCommand"], "")
+        self.assertFalse(self.config["cleanUrls"], "Existing .html gallery links must keep working")
+        # Rebuilding removes old output instead of deploying deleted files from a cache.
+        stale_file = self.output / "stale-file.txt"
+        stale_file.write_text("Should not be published")
+        subprocess.run(self.build_command, cwd=ROOT, check=True)
+        self.assertFalse(stale_file.exists())
+        self.assertEqual(
+            {path.name for path in self.output.iterdir()},
+            {"index.html", "gallery.html", "assets", "images"},
+        )
+        for path in self.output.rglob("*"):
+            if path.is_file():
+                with self.subTest(path=path.relative_to(self.output)):
+                    self.assertFalse(path.name.startswith("."))
+                    source = ROOT / path.relative_to(self.output)
+                    self.assertEqual(
+                        hashlib.sha256(path.read_bytes()).digest(),
+                        hashlib.sha256(source.read_bytes()).digest(),
+                    )
+        for private_path in ("tests/test_site.py", "requirements-dev.txt", "vercel.json", ".git/config"):
+            with self.subTest(path=private_path):
+                response = self.context.request.get(self.base + private_path)
+                self.assertEqual(response.status, 404)
+
     def test_all_uploaded_photographs_are_available(self):
         for category in ("concerts", "real-estate"):
             with self.subTest(category=category):
@@ -111,7 +146,7 @@ class SiteTests(unittest.TestCase):
                     expect(self.page.locator("#gallery-title")).to_have_text("Collection not found")
 
     def test_home_assets_and_responsive_layout(self):
-        for path in ("index.html", "gallery.html?category=concerts"):
+        for path in ("", "gallery.html?category=concerts"):
             for width in (320, 390, 720, 768, 1280):
                 with self.subTest(path=path, width=width):
                     self.page.set_viewport_size({"width": width, "height": 900})
