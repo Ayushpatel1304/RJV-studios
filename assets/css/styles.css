@@ -84,9 +84,6 @@
   .hero h1 em { color: var(--accent); font-style: italic; }
   .hero p { color: var(--muted); max-width: 560px; font-size: 1.1rem; margin-bottom: 38px; }
   .hero-actions { display: flex; flex-wrap: wrap; gap: 14px; }
-  .hero-stats { display: flex; flex-wrap: wrap; gap: 48px; margin-top: 72px; padding-top: 32px; border-top: 1px solid var(--line); }
-  .hero-stats strong { display: block; font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--accent); }
-  .hero-stats span { font-size: .85rem; color: var(--muted); }
 
   /* Services */
   .services { background: var(--bg-alt); }
@@ -216,15 +213,12 @@
     from { opacity: 0; translate: 0 32px; }
     to   { opacity: 1; translate: 0 0; }
   }
-  .hero .eyebrow, .hero h1, .hero p, .hero-actions, .hero-stats {
+  .hero .eyebrow, .hero h1, .hero p, .hero-actions {
     animation: fadeUp .9s cubic-bezier(.2,.7,.2,1) both;
   }
   .hero h1 { animation-delay: .12s; }
   .hero p { animation-delay: .26s; }
   .hero-actions { animation-delay: .4s; }
-  .hero-stats { animation-delay: .55s; }
-  .hero-stats div { transition: transform .3s ease; }
-  .hero-stats div:hover { transform: translateY(-4px); }
 
   /* Service cards: lift, glow, icon spin */
   .service {
@@ -386,7 +380,6 @@
     .gallery { grid-template-columns: 1fr; grid-auto-rows: 240px; }
     .tile.wide { grid-column: auto; }
     .tile.tall { grid-row: auto; }
-    .hero-stats { gap: 28px; }
   }
 
 
