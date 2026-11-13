@@ -1,6 +1,6 @@
 /* RJV STUDIOS — GALLERY CONTENT
    Add as many photographs as you like to each category — there is no six-photo limit.
-   Upload files to images/galleries/<category>/, then add one [caption, path] entry
+   Upload files to images/galleries/<category>/, then add one [altText, path] entry
    per photograph in the matching photos array below. Paths are relative to the website root.
    The gallery renders every entry in each array; do not remove entries to stay under a limit.
 */
@@ -73,29 +73,25 @@ if (collection) {
   description.textContent = collection.description;
   count.textContent = collection.photos.length + (collection.photos.length === 1 ? " image" : " images");
   if (collection.photos.length === 0) empty.style.display = "block";
-  collection.photos.forEach(([caption, src], index) => {
+  collection.photos.forEach(([altText, src], index) => {
     const figure = document.createElement("figure");
     figure.className = "photo";
     const img = document.createElement("img");
     img.src = src;
-    img.alt = caption;
+    img.alt = altText;
     img.loading = "lazy";
     const openButton = document.createElement("button");
     openButton.type = "button";
     openButton.className = "photo-open";
-    openButton.setAttribute("aria-label", "Open " + caption);
+    openButton.setAttribute("aria-label", "Open " + altText);
     img.addEventListener("error", () => {
       openButton.disabled = true;
       figure.classList.add("image-missing");
       img.removeAttribute("src");
-      img.alt = caption + " — image unavailable";
+      img.alt = altText + " — image unavailable";
     }, { once: true });
-    const figcaption = document.createElement("figcaption");
-    const category = document.createElement("span");
-    category.textContent = collection.title;
-    figcaption.append(category, document.createTextNode(caption));
     openButton.appendChild(img);
-    figure.append(openButton, figcaption);
+    figure.appendChild(openButton);
     openButton.addEventListener("click", () => {
       if (img.complete && img.naturalWidth > 0) openLightbox(index);
     });
@@ -120,9 +116,9 @@ const pageContent = document.querySelectorAll("header, main, footer");
 function openLightbox(index) {
   if (!collection || collection.photos.length === 0) return;
   activeIndex = index;
-  const [caption, src] = collection.photos[activeIndex];
+  const [altText, src] = collection.photos[activeIndex];
   lightboxImage.src = src;
-  lightboxImage.alt = caption;
+  lightboxImage.alt = altText;
   if (!lightbox.classList.contains("open")) {
     previousFocus = document.activeElement;
     previousOverflow = document.body.style.overflow;

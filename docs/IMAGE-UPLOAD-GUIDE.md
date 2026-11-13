@@ -21,8 +21,6 @@ The gallery displays every photo entry listed in the matching category's `photos
 `images/backgrounds/portfolio/portraits-cover.webp`
 `images/backgrounds/portfolio/concerts-cover.webp`
 `images/backgrounds/portfolio/events-cover.webp`
-`images/backgrounds/portfolio/portraits-cover-02.webp`
-`images/backgrounds/portfolio/real-estate-cover-02.webp`
 
 ### Gallery photographs
 Upload each photograph into its matching category folder:
@@ -43,6 +41,8 @@ photos: [
   ["One more photograph", "images/galleries/events/event-08.webp"]
 ]
 ```
+
+The first value is alternative text for screen readers and image controls, not a visible caption. Photos are displayed without titles or descriptions.
 
 Keep adding entries separated by commas. There is no fixed maximum; the gallery grid and lightbox navigation include all entries automatically.
 

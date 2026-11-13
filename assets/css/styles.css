@@ -138,7 +138,6 @@
     background: linear-gradient(to top, rgba(0,0,0,.78), transparent 55%);
   }
   .tile .label { position: relative; z-index: 2; padding: 20px; }
-  .tile .label small { color: var(--accent); letter-spacing: .15em; text-transform: uppercase; font-size: .7rem; }
   .tile .label h3 { font-size: 1.1rem; margin-top: 2px; }
   .tile.wide { grid-column: span 2; }
   .tile.tall { grid-row: span 2; }
@@ -149,7 +148,6 @@
   .t4::before { background-image: linear-gradient(135deg, #20382f, #0c1511); }
   .t5::before { background-image: linear-gradient(135deg, #3a2a1c, #140e08); }
   .t6::before { background-image: linear-gradient(135deg, #2b2540, #100d19); }
-  .t7::before { background-image: linear-gradient(135deg, #1d3a3d, #0a1516); }
 
   /* Process */
   .process { background: var(--bg-alt); }
@@ -349,7 +347,7 @@
   .s5 { background-image: linear-gradient(135deg, #2b2540, #100d19); }
 
   /* Use existing assets; other categories retain their gradient until a cover is uploaded. */
-  .t2::before, .t7::before { background-image: url("../../images/backgrounds/portfolio/real-estate-cover.webp"); }
+  .t2::before { background-image: url("../../images/backgrounds/portfolio/real-estate-cover.webp"); }
   .t4::before { background-image: url("../../images/galleries/concerts/concert-01.webp"); }
 
   /* Respect users who prefer reduced motion */
@@ -465,8 +463,10 @@ header .nav { min-height: 70px; }
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: linear-gradient(135deg, rgba(255,255,255,.11), transparent 38%, rgba(200,164,92,.06));
-  opacity: .8;
+  background:
+    linear-gradient(to top, rgba(0,0,0,.78), transparent 55%),
+    linear-gradient(135deg, rgba(255,255,255,.11), transparent 38%, rgba(200,164,92,.06));
+  opacity: 1;
 }
 form, .contact-form, .about-panel, .glass-panel {
   border: 1px solid var(--glass-border);
