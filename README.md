@@ -61,10 +61,8 @@ Upload the following files to `images/backgrounds/portfolio/`:
 - `concerts-cover.webp`
 - `events-cover.webp`
 - `commercial-cover.webp`
-- `portraits-cover-02.webp`
-- `real-estate-cover-02.webp`
 
-These are optional separate crops for the small homepage cards. Set their paths in `assets/css/styles.css` after uploading them. Currently, the real-estate cards share the uploaded real-estate cover and the concert card uses the first concert photograph. Other cards use gradients until covers are supplied.
+These are optional separate crops for the small homepage cards. Set their paths in `assets/css/styles.css` after uploading them. Currently, the single real-estate card uses the uploaded real-estate cover and the concert card uses the first concert photograph. Other cards use gradients until covers are supplied.
 
 ### Other page-section backgrounds
 The `images/backgrounds/sections/` folder is reserved for future images behind the Services, About or Contact sections. Add images there and reference them from `assets/css/styles.css` when you decide to use them.
@@ -84,14 +82,14 @@ The `images/backgrounds/sections/` folder is reserved for future images behind t
 | Concerts | `concert-01.webp`, `concerts-02.webp`, `concerts-03.jpg`, then the remaining uploaded `concerts-*` files |
 | Events | `event-01.webp` to `event-06.webp` |
 
-Add more photos by copying a photo entry in `assets/js/gallery.js` and changing its caption and file path.
+Add more photos by copying a photo entry in `assets/js/gallery.js` and changing its alternative text and file path. The alternative text is used for accessibility; photographs have no visible captions.
 
 ## 5. Where to edit the website
 
 - Text, headings, services, contact details and homepage layout: `index.html`
 - Colours, typography, homepage layout, hover effects, slideshow and portfolio-card images: `assets/css/styles.css`
 - Gallery layout and lightbox presentation: `assets/css/gallery.css`
-- Gallery categories, captions and gallery image paths: `assets/js/gallery.js`
+- Gallery categories, accessible image descriptions and gallery image paths: `assets/js/gallery.js`
 - Shared navigation behaviour: `assets/js/main.js`
 - Background images: `images/backgrounds/`
 - Gallery images: `images/galleries/`
