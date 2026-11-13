@@ -1,4 +1,4 @@
-# RJV Studios — Photography Portfolio
+# RJV Studios — Photography & Video Portfolio
 
 A responsive, static photography and videography portfolio for RJV Studios, hosted on Vercel. The site uses plain HTML, CSS and JavaScript. A dependency-free Node.js script packages the public website files for deployment; no framework, npm install or application server is required.
 
@@ -19,7 +19,7 @@ RJV-studios/
 │   │   └── gallery.css           # Gallery page layout and lightbox styles
 │   └── js/
 │       ├── main.js               # Shared navigation interactions
-│       └── gallery.js            # Gallery categories, images and lightbox
+│       └── gallery.js            # Gallery categories, photos, videos and lightbox
 └── images/
     ├── branding/                 # Logos and brand assets
     ├── backgrounds/
@@ -45,7 +45,7 @@ RJV-studios/
 
 ## 3. How to add background images
 
-Background images are intentionally kept separate from customer gallery photographs.
+Background images are intentionally kept separate from the photos and videos in customer galleries.
 
 ### Hero slideshow
 1. Open `images/backgrounds/hero/`.
@@ -67,32 +67,38 @@ These are optional separate crops for the small homepage cards. Set their paths 
 ### Other page-section backgrounds
 The `images/backgrounds/sections/` folder is reserved for future images behind the Services, About or Contact sections. Add images there and reference them from `assets/css/styles.css` when you decide to use them.
 
-## 4. How to add gallery photographs
+## 4. How to add gallery photos and videos
 
-1. Open the matching folder inside `images/galleries/`.
-2. Upload images using the filenames below, or edit `assets/js/gallery.js` to match your filenames.
-3. Use compressed `.webp` or `.jpg` images. Keep the original high-resolution files backed up separately.
-4. Commit the changes. The gallery displays every entry listed in `assets/js/gallery.js`; uploading a file alone does not add it to the gallery. Categories with no photo entries show an empty state.
+All five categories — Commercial, Real Estate, Portraits, Concerts and Events — support photos, videos, or any mixture of both.
 
-| Category | Example filenames |
-|---|---|
-| Commercial | `commercial-01.webp` to `commercial-06.webp` |
-| Real Estate | `real-estate-01.webp` to `real-estate-06.webp` |
-| Portraits | `portrait-01.webp` to `portrait-06.webp` |
-| Concerts | `concert-01.webp`, `concerts-02.webp`, `concerts-03.jpg`, then the remaining uploaded `concerts-*` files |
-| Events | `event-01.webp` to `event-06.webp` |
+1. Upload your files to the matching folder inside `images/galleries/`. These existing folders hold both photos and videos.
+2. Add an entry to that category's `media` array in `assets/js/gallery.js`. Uploading a file alone does not list it in the gallery.
+3. Use `["Alternative text", "path/to/file"]` for a photo or video. Video file extensions are detected automatically. An optional third value supplies a video poster image.
 
-Add more photos by copying a photo entry in `assets/js/gallery.js` and changing its alternative text and file path. The alternative text is used for accessibility; photographs have no visible captions.
+```js
+media: [
+  ["Event photograph", "images/galleries/events/event-01.webp"],
+  ["Event highlights", "images/galleries/events/highlights.mp4"],
+  ["Behind the scenes", "images/galleries/events/behind-the-scenes.webm",
+    "images/galleries/events/video-poster.webp"]
+]
+```
+
+Only add entries for files you have uploaded. MP4 (H.264/AAC) is recommended for broad browser support; WebM is also supported. OGV/OGG and M4V paths are recognized as videos, with playback depending on browser codec support. Convert camera formats such as MOV to a web-friendly format before uploading.
+
+Videos show a play button and open in the gallery viewer with native playback controls. Thumbnails stay paused and muted. Closing the viewer or changing items stops playback. The counter includes both photos and videos, and empty categories show an empty state. There is no fixed item limit.
+
+The first value supplies accessibility text for images and player controls. Individual files have no visible titles or descriptions. See [the upload guide](docs/IMAGE-UPLOAD-GUIDE.md) for more examples and export guidance.
 
 ## 5. Where to edit the website
 
 - Text, headings, services, contact details and homepage layout: `index.html`
 - Colours, typography, homepage layout, hover effects, slideshow and portfolio-card images: `assets/css/styles.css`
 - Gallery layout and lightbox presentation: `assets/css/gallery.css`
-- Gallery categories, accessible image descriptions and gallery image paths: `assets/js/gallery.js`
+- Gallery categories, accessible media labels and file paths: `assets/js/gallery.js`
 - Shared navigation behaviour: `assets/js/main.js`
 - Background images: `images/backgrounds/`
-- Gallery images: `images/galleries/`
+- Gallery photos and videos: `images/galleries/`
 
 ## 6. Preview and deployment
 
@@ -133,4 +139,4 @@ Open `http://localhost:8000`. Re-run the build after changing the source files.
 
 ## 8. Regression checks
 
-See [Testing](docs/TESTING.md) for browser checks covering gallery assets, mobile navigation, the lightbox and contact-form validation. The checks build and serve the Vercel deployment output locally. Python and Playwright are development-only dependencies and are not installed during Vercel builds.
+See [Testing](docs/TESTING.md) for browser checks covering gallery assets, MP4/WebM playback across all categories, mobile navigation, the lightbox and contact-form validation. The checks build and serve the Vercel deployment output locally. Python and Playwright are development-only dependencies and are not installed during Vercel builds.

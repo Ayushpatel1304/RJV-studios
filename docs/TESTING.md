@@ -31,3 +31,19 @@ The checks cover:
 - Keyboard and mobile navigation on both pages.
 - Lightbox opening, cycling, focus containment and focus restoration.
 - Phone/date validation and the form payload using a mocked submission.
+
+Video checks inject real, tiny MP4 and WebM clips into each category using local
+browser routes. They verify playback, mixed-media navigation, video shutdown,
+mobile controls and decoding errors without adding sample videos to live galleries.
+Fixtures are base64-encoded under `tests/fixtures/` and are excluded from the
+Vercel output along with the rest of `tests/`.
+
+The silent black clips can be regenerated with FFmpeg (needed only when updating
+fixtures, not when running tests):
+
+```sh
+ffmpeg -f lavfi -i color=c=black:s=160x90:r=4:d=10 -an -c:v libx264 -pix_fmt yuv420p -profile:v baseline -movflags +faststart clip.mp4
+ffmpeg -f lavfi -i color=c=black:s=160x90:r=4:d=10 -an -c:v libvpx -deadline realtime clip.webm
+```
+
+Base64-encode each resulting file into `tests/fixtures/video.<extension>.base64`.

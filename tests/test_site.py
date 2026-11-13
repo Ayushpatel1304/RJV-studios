@@ -1,5 +1,6 @@
 """Regressions against Vercel's static build output; no real enquiries are sent."""
 
+import base64
 import functools
 import hashlib
 import json
@@ -120,7 +121,7 @@ class VercelSiteTests(unittest.TestCase):
         for category in ("concerts", "real-estate"):
             with self.subTest(category=category):
                 self.visit("gallery.html?category=" + category)
-                photos = self.page.locator(".photo img")
+                photos = self.page.locator(".media-item img")
                 expected = {
                     path.relative_to(ROOT).as_posix()
                     for path in (ROOT / "images/galleries" / category).iterdir()
@@ -128,7 +129,7 @@ class VercelSiteTests(unittest.TestCase):
                 }
                 actual = set(photos.evaluate_all("images => images.map(img => img.getAttribute('src'))"))
                 self.assertEqual(actual, expected)
-                expect(self.page.locator("#photo-count")).to_have_text(f"{len(expected)} images")
+                expect(self.page.locator("#media-count")).to_have_text(f"{len(expected)} images")
                 for image in photos.all():
                     image.scroll_into_view_if_needed()
                     expect(image).to_have_js_property("complete", True)
@@ -139,9 +140,9 @@ class VercelSiteTests(unittest.TestCase):
             with self.subTest(category=category):
                 self.visit("gallery.html?category=" + category)
                 expect(self.page.locator("#empty-state")).to_be_visible()
-                expect(self.page.locator(".photo")).to_have_count(0)
+                expect(self.page.locator(".media-item")).to_have_count(0)
                 if category in {"portraits", "events", "commercial"}:
-                    expect(self.page.locator("#photo-count")).to_have_text("0 images")
+                    expect(self.page.locator("#media-count")).to_have_text("0 items")
                 else:
                     expect(self.page.locator("#gallery-title")).to_have_text("Collection not found")
 
@@ -193,9 +194,9 @@ class VercelSiteTests(unittest.TestCase):
 
     def test_lightbox_keyboard_and_focus(self):
         self.visit("gallery.html?category=concerts")
-        first = self.page.locator(".photo-open").first
+        first = self.page.locator(".media-open").first
         first.scroll_into_view_if_needed()
-        self.page.wait_for_function("document.querySelector('.photo img').naturalWidth > 0")
+        self.page.wait_for_function("document.querySelector('.media-item img').naturalWidth > 0")
         first.focus()
         self.page.keyboard.press("Enter")
         dialog = self.page.get_by_role("dialog")
@@ -204,17 +205,17 @@ class VercelSiteTests(unittest.TestCase):
         expect(close).to_be_focused()
         self.assertTrue(self.page.locator("main").evaluate("el => el.inert"))
         self.assertEqual(self.page.evaluate("document.body.style.overflow"), "hidden")
-        images = self.page.locator(".photo img").evaluate_all("els => els.map(el => el.getAttribute('src'))")
+        images = self.page.locator(".media-item img").evaluate_all("els => els.map(el => el.getAttribute('src'))")
         self.page.keyboard.press("ArrowLeft")
         expect(self.page.locator("#lightbox-image")).to_have_attribute("src", images[-1])
         self.page.keyboard.press("ArrowRight")
         expect(self.page.locator("#lightbox-image")).to_have_attribute("src", images[0])
-        self.page.get_by_role("button", name="Next photo").click()
+        self.page.get_by_role("button", name="Next item").click()
         expect(self.page.locator("#lightbox-image")).to_have_attribute("src", images[1])
         self.page.keyboard.press("Tab")
         expect(close).to_be_focused()
         self.page.keyboard.press("Shift+Tab")
-        expect(self.page.get_by_role("button", name="Next photo")).to_be_focused()
+        expect(self.page.get_by_role("button", name="Next item")).to_be_focused()
         self.page.keyboard.press("Escape")
         expect(dialog).not_to_be_visible()
         expect(first).to_be_focused()
@@ -225,6 +226,125 @@ class VercelSiteTests(unittest.TestCase):
         dialog.click(position={"x": 5, "y": 5})
         expect(dialog).not_to_be_visible()
         expect(first).to_be_focused()
+
+    def inject_media(self, replacements):
+        """Use real clips without publishing test content in any live collection."""
+        script = (self.output / "assets/js/gallery.js").read_text()
+        updates = "\n".join(
+            f"collections[{json.dumps(category)}].media = {json.dumps(entries)};"
+            for category, entries in replacements.items()
+        )
+        script = script.replace("const params =", updates + "\nconst params =", 1)
+        self.page.route("**/assets/js/gallery.js", lambda route: route.fulfill(
+            content_type="application/javascript", body=script
+        ))
+
+        def serve_clip(body, extension):
+            def handler(route):
+                route.fulfill(content_type="video/" + extension, body=body)
+            return handler
+
+        for extension in ("mp4", "webm"):
+            clip = base64.b64decode((ROOT / f"tests/fixtures/video.{extension}.base64").read_text())
+            self.page.route(
+                f"**/__test__/clip.{extension}*",
+                serve_clip(clip, extension),
+            )
+
+    def test_video_playback_in_every_category(self):
+        categories = ("commercial", "real-estate", "portraits", "concerts", "events")
+        for extension in ("mp4", "webm"):
+            self.inject_media({
+                category: [["Test clip", f"__test__/clip.{extension}",
+                            "images/backgrounds/portfolio/real-estate-cover.webp"]]
+                for category in categories
+            })
+            for category in categories:
+                with self.subTest(category=category, format=extension):
+                    self.visit("gallery.html?category=" + category)
+                    expect(self.page.locator("#media-count")).to_have_text("1 video")
+                    expect(self.page.locator("figcaption")).to_have_count(0)
+                    thumbnail = self.page.locator(".media-item video")
+                    expect(thumbnail).to_have_js_property("muted", True)
+                    expect(thumbnail).to_have_js_property("paused", True)
+                    expect(thumbnail).to_have_attribute("preload", "metadata")
+                    expect(thumbnail).to_have_attribute(
+                        "poster", "images/backgrounds/portfolio/real-estate-cover.webp"
+                    )
+                    button = self.page.get_by_role("button", name="Play Test clip")
+                    button.click()
+                    player = self.page.locator("#lightbox-video")
+                    expect(player).to_be_visible()
+                    expect(player).to_have_js_property("controls", True)
+                    expect(player).to_have_js_property("playsInline", True)
+                    expect(self.page.locator("#lightbox-image")).not_to_be_visible()
+                    self.page.wait_for_function(
+                        "document.getElementById('lightbox-video').readyState >= 2"
+                    )
+                    expect(player).to_have_js_property("paused", False)
+                    self.page.keyboard.press("Escape")
+                    expect(player).to_have_js_property("paused", True)
+                    self.assertIsNone(player.get_attribute("src"))
+                    expect(button).to_be_focused()
+
+    def test_mixed_media_navigation_and_playback_cleanup(self):
+        self.inject_media({"real-estate": [
+            ["First clip", "__test__/clip.mp4"],
+            ["Interior", "images/galleries/real-estate/real-estate-01.webp"],
+            ["Second clip", "__test__/clip.webm?version=1"],
+        ]})
+        self.page.set_viewport_size({"width": 390, "height": 844})
+        self.visit("gallery.html?category=real-estate")
+        expect(self.page.locator("#media-count")).to_have_text("1 image · 2 videos")
+        first = self.page.get_by_role("button", name="Play First clip")
+        first.focus()
+        first.press("Enter")
+        player = self.page.locator("#lightbox-video")
+        expect(player).to_have_js_property("paused", False)
+        video_box = player.bounding_box()
+        for control in ("Previous item", "Next item"):
+            box = self.page.get_by_role("button", name=control).bounding_box()
+            self.assertGreaterEqual(box["y"], video_box["y"] + video_box["height"])
+        self.page.get_by_role("button", name="Next item").click()
+        expect(self.page.locator("#lightbox-image")).to_be_visible()
+        expect(player).not_to_be_visible()
+        expect(player).to_have_js_property("paused", True)
+        self.assertIsNone(player.get_attribute("src"))
+        self.page.keyboard.press("ArrowRight")
+        expect(player).to_be_visible()
+        expect(player).to_have_attribute("src", "__test__/clip.webm?version=1")
+        expect(player).to_have_js_property("paused", False)
+        self.assertIsNone(player.get_attribute("poster"))
+        # Native video keyboard controls must not accidentally change gallery items.
+        player.focus()
+        self.page.keyboard.press("ArrowRight")
+        expect(player).to_have_attribute("src", "__test__/clip.webm?version=1")
+        self.page.get_by_role("button", name="Close", exact=True).click()
+        expect(player).to_have_js_property("paused", True)
+        self.assertIsNone(player.get_attribute("src"))
+        expect(first).to_be_focused()
+        first.press("Space")
+        self.page.get_by_role("dialog").click(position={"x": 5, "y": 5})
+        expect(player).to_have_js_property("paused", True)
+        expect(first).to_be_focused()
+
+    def test_video_decode_failure(self):
+        self.inject_media({"events": [["Test clip", "__test__/clip.mp4"]]})
+        self.visit("gallery.html?category=events")
+        self.page.get_by_role("button", name="Play Test clip").click()
+        self.page.route("**/__test__/invalid.mp4", lambda route: route.fulfill(
+            content_type="video/mp4", body=b"Invalid video data"
+        ))
+        self.page.locator("#lightbox-video").evaluate("""video => {
+            video.src = '__test__/invalid.mp4';
+            video.load();
+        }""")
+        expect(self.page.get_by_role("status")).to_have_text(
+            "This video could not be played. Please try another item."
+        )
+        self.page.keyboard.press("Escape")
+        self.page.get_by_role("button", name="Play Test clip").click()
+        expect(self.page.get_by_role("status")).not_to_be_visible()
 
     def test_phone_and_date_validation(self):
         self.visit()

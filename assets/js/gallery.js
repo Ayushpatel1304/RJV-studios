@@ -1,14 +1,16 @@
 /* RJV STUDIOS — GALLERY CONTENT
-   Add as many photographs as you like to each category — there is no six-photo limit.
-   Upload files to images/galleries/<category>/, then add one [altText, path] entry
-   per photograph in the matching photos array below. Paths are relative to the website root.
+   Add photos and videos to any category — there is no fixed item limit.
+   Upload files to images/galleries/<category>/, then add one [altText, path, optionalPoster]
+   entry to the matching media array. MP4, WebM, OGV, OGG and M4V paths are videos;
+   other paths are images. Posters are optional image paths for video thumbnails.
+   All paths are relative to the website root.
    The gallery renders every entry in each array; do not remove entries to stay under a limit.
 */
 const collections = {
   "real-estate": {
     title: "Real Estate",
     description: "Spaces, architecture and interiors, captured with clarity and character.",
-    photos: [
+    media: [
       ["Interior Details","images/galleries/real-estate/real-estate-01.webp"],
       ["Contemporary Living","images/galleries/real-estate/real-estate-02.webp"],
       ["Architectural Lines","images/galleries/real-estate/real-estate-03.webp"],
@@ -23,12 +25,12 @@ const collections = {
   "portraits": {
     title: "Portraits",
     description: "People, personality and expression — thoughtfully photographed.",
-    photos: []
+    media: []
   },
   "concerts": {
     title: "Concerts",
     description: "The energy of live music, from the stage lights to the crowd.",
-    photos: [
+    media: [
       ["On Stage","images/galleries/concerts/concert-01.webp"],
       ["Live Energy","images/galleries/concerts/concerts-02.webp"],
       ["Under the Lights","images/galleries/concerts/concerts-03.jpg"],
@@ -49,12 +51,12 @@ const collections = {
   "events": {
     title: "Events",
     description: "Real moments and thoughtful details from celebrations and special occasions.",
-    photos: []
+    media: []
   },
   "commercial": {
     title: "Commercial",
     description: "Brand, product and business imagery made to help companies stand out.",
-    photos: []
+    media: []
   }
 };
 
@@ -65,35 +67,57 @@ const title = document.getElementById("gallery-title");
 const description = document.getElementById("gallery-description");
 const grid = document.getElementById("gallery-grid");
 const empty = document.getElementById("empty-state");
-const count = document.getElementById("photo-count");
+const count = document.getElementById("media-count");
+const mediaItems = collection?.media || [];
+const isVideo = src => /\.(mp4|webm|ogv|ogg|m4v)(?:[?#]|$)/i.test(src);
 
 if (collection) {
   document.title = collection.title + " Gallery | RJV Studios";
   title.textContent = collection.title;
   description.textContent = collection.description;
-  count.textContent = collection.photos.length + (collection.photos.length === 1 ? " image" : " images");
-  if (collection.photos.length === 0) empty.style.display = "block";
-  collection.photos.forEach(([altText, src], index) => {
+  const videoCount = mediaItems.filter(([, src]) => isVideo(src)).length;
+  const imageCount = mediaItems.length - videoCount;
+  const totals = [];
+  if (imageCount) totals.push(imageCount + (imageCount === 1 ? " image" : " images"));
+  if (videoCount) totals.push(videoCount + (videoCount === 1 ? " video" : " videos"));
+  count.textContent = totals.join(" · ") || "0 items";
+  if (mediaItems.length === 0) empty.style.display = "block";
+  mediaItems.forEach(([altText, src, poster], index) => {
+    const video = isVideo(src);
     const figure = document.createElement("figure");
-    figure.className = "photo";
-    const img = document.createElement("img");
-    img.src = src;
-    img.alt = altText;
-    img.loading = "lazy";
+    figure.className = "media-item" + (video ? " video-item" : "");
+    const preview = document.createElement(video ? "video" : "img");
     const openButton = document.createElement("button");
     openButton.type = "button";
-    openButton.className = "photo-open";
-    openButton.setAttribute("aria-label", "Open " + altText);
-    img.addEventListener("error", () => {
+    openButton.className = "media-open";
+    openButton.setAttribute("aria-label", (video ? "Play " : "Open ") + altText);
+    if (video) {
+      preview.preload = "metadata";
+      preview.muted = true;
+      preview.playsInline = true;
+      preview.tabIndex = -1;
+      preview.setAttribute("aria-hidden", "true");
+      if (poster) preview.poster = poster;
+      const playIcon = document.createElement("span");
+      playIcon.className = "video-play";
+      playIcon.textContent = "▶︎";
+      playIcon.setAttribute("aria-hidden", "true");
+      openButton.appendChild(playIcon);
+    } else {
+      preview.alt = altText;
+      preview.loading = "lazy";
+    }
+    preview.addEventListener("error", () => {
       openButton.disabled = true;
-      figure.classList.add("image-missing");
-      img.removeAttribute("src");
-      img.alt = altText + " — image unavailable";
+      openButton.setAttribute("aria-label", altText + " — media unavailable");
+      figure.classList.add("media-missing");
+      if (!video) preview.alt = altText + " — image unavailable";
     }, { once: true });
-    openButton.appendChild(img);
+    preview.src = src;
+    openButton.appendChild(preview);
     figure.appendChild(openButton);
     openButton.addEventListener("click", () => {
-      if (img.complete && img.naturalWidth > 0) openLightbox(index);
+      if (video || (preview.complete && preview.naturalWidth > 0)) openLightbox(index, openButton);
     });
     grid.appendChild(figure);
   });
@@ -109,18 +133,42 @@ let previousFocus = null;
 let previousOverflow = "";
 const lightbox = document.getElementById("lightbox");
 const lightboxImage = document.getElementById("lightbox-image");
+const lightboxVideo = document.getElementById("lightbox-video");
+const lightboxError = document.getElementById("lightbox-error");
 const closeButton = document.getElementById("close-lightbox");
-const previousButton = document.getElementById("prev-photo");
-const nextButton = document.getElementById("next-photo");
+const previousButton = document.getElementById("prev-media");
+const nextButton = document.getElementById("next-media");
 const pageContent = document.querySelectorAll("header, main, footer");
-function openLightbox(index) {
-  if (!collection || collection.photos.length === 0) return;
+function stopVideo() {
+  lightboxVideo.pause();
+  lightboxVideo.removeAttribute("src");
+  lightboxVideo.load();
+}
+function openLightbox(index, opener = document.activeElement) {
+  if (mediaItems.length === 0) return;
   activeIndex = index;
-  const [altText, src] = collection.photos[activeIndex];
-  lightboxImage.src = src;
-  lightboxImage.alt = altText;
+  const [altText, src, poster] = mediaItems[activeIndex];
+  const video = isVideo(src);
+  stopVideo();
+  lightboxError.hidden = true;
+  lightboxImage.hidden = video;
+  lightboxVideo.hidden = !video;
+  lightbox.classList.toggle("showing-video", video);
+  lightbox.setAttribute("aria-label", video ? "Expanded video" : "Expanded photograph");
+  if (video) {
+    lightboxImage.removeAttribute("src");
+    lightboxVideo.setAttribute("aria-label", altText);
+    if (poster) lightboxVideo.poster = poster;
+    else lightboxVideo.removeAttribute("poster");
+    lightboxVideo.src = src;
+    // Opening a video is a user action; native controls remain available if play is blocked.
+    lightboxVideo.play().catch(() => {});
+  } else {
+    lightboxImage.src = src;
+    lightboxImage.alt = altText;
+  }
   if (!lightbox.classList.contains("open")) {
-    previousFocus = document.activeElement;
+    previousFocus = opener;
     previousOverflow = document.body.style.overflow;
     lightbox.classList.add("open");
     lightbox.setAttribute("aria-hidden", "false");
@@ -131,33 +179,39 @@ function openLightbox(index) {
 }
 function closeLightbox() {
   if (!lightbox.classList.contains("open")) return;
+  stopVideo();
   lightbox.classList.remove("open");
   lightbox.setAttribute("aria-hidden", "true");
   document.body.style.overflow = previousOverflow;
   pageContent.forEach(element => { element.inert = false; });
   previousFocus?.focus();
 }
-function movePhoto(step) {
-  if (!collection || collection.photos.length === 0) return;
-  activeIndex = (activeIndex + step + collection.photos.length) % collection.photos.length;
+function moveMedia(step) {
+  if (mediaItems.length === 0) return;
+  activeIndex = (activeIndex + step + mediaItems.length) % mediaItems.length;
   openLightbox(activeIndex);
 }
+lightboxVideo.addEventListener("error", () => {
+  if (lightboxVideo.hidden || !lightboxVideo.error) return;
+  lightboxError.textContent = "This video could not be played. Please try another item.";
+  lightboxError.hidden = false;
+});
 closeButton.addEventListener("click", closeLightbox);
-previousButton.addEventListener("click", () => movePhoto(-1));
-nextButton.addEventListener("click", () => movePhoto(1));
+previousButton.addEventListener("click", () => moveMedia(-1));
+nextButton.addEventListener("click", () => moveMedia(1));
 lightbox.addEventListener("click", event => {
   if (event.target === lightbox) closeLightbox();
 });
 document.addEventListener("keydown", event => {
   if (!lightbox.classList.contains("open")) return;
   if (event.key === "Escape") closeLightbox();
-  if (event.key === "ArrowLeft") {
+  if (event.key === "ArrowLeft" && event.target !== lightboxVideo) {
     event.preventDefault();
-    movePhoto(-1);
+    moveMedia(-1);
   }
-  if (event.key === "ArrowRight") {
+  if (event.key === "ArrowRight" && event.target !== lightboxVideo) {
     event.preventDefault();
-    movePhoto(1);
+    moveMedia(1);
   }
   if (event.key === "Tab") {
     const first = closeButton;

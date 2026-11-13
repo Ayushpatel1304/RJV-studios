@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Explore photography collections by RJV Studios.">
+<meta name="description" content="Explore photography and video collections by RJV Studios.">
 <title>Gallery | RJV Studios</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -27,16 +27,16 @@
   <section class="hero">
     <div class="container">
       <span class="eyebrow">RJV Studios · Selected work</span>
-      <h1 id="gallery-title">Photography Gallery</h1>
+      <h1 id="gallery-title">Photo &amp; Video Gallery</h1>
       <p id="gallery-description">A collection of moments, stories and details captured by RJV Studios.</p>
     </div>
   </section>
   <div class="container">
     <div class="toolbar">
       <a class="back" href="index.html#work">← Back to portfolio</a>
-      <span class="count" id="photo-count"></span>
+      <span class="count" id="media-count"></span>
     </div>
-    <div class="gallery" id="gallery-grid" aria-label="Photography collection"></div>
+    <div class="gallery" id="gallery-grid" aria-label="Photo and video collection"></div>
     <p class="empty" id="empty-state">This collection is being updated. Please check back soon.</p>
   </div>
 </main>
@@ -44,9 +44,11 @@
 
 <div class="lightbox" id="lightbox" role="dialog" aria-hidden="true" aria-modal="true" aria-label="Expanded photograph">
   <button class="close" id="close-lightbox" aria-label="Close">×</button>
-  <button class="prev" id="prev-photo" aria-label="Previous photo">‹</button>
+  <button class="prev" id="prev-media" aria-label="Previous item">‹</button>
   <img id="lightbox-image" alt="">
-  <button class="next" id="next-photo" aria-label="Next photo">›</button>
+  <video id="lightbox-video" controls playsinline preload="metadata" hidden></video>
+  <p id="lightbox-error" role="status" hidden></p>
+  <button class="next" id="next-media" aria-label="Next item">›</button>
 </div>
 <script src="assets/js/main.js" defer></script>
 <script src="assets/js/gallery.js" defer></script>
