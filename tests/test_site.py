@@ -199,13 +199,15 @@ class VercelSiteTests(unittest.TestCase):
         self.assertLess(previews, originals * 0.2)
 
     def test_empty_and_invalid_categories(self):
-        for category in ("portraits", "events", "commercial", "unknown", "__proto__", "constructor", "toString"):
+        empty_categories = ("portraits", "events", "commercial", "automotive", "couple", "london")
+        for category in (*empty_categories, "unknown", "__proto__", "constructor", "toString"):
             with self.subTest(category=category):
                 self.visit("gallery.html?category=" + category)
                 expect(self.page.locator("#empty-state")).to_be_visible()
                 expect(self.page.locator(".media-item")).to_have_count(0)
-                if category in {"portraits", "events", "commercial"}:
+                if category in empty_categories:
                     expect(self.page.locator("#media-count")).to_have_text("0 items")
+                    expect(self.page.locator("#gallery-title")).to_have_text(category.title())
                 else:
                     expect(self.page.locator("#gallery-title")).to_have_text("Collection not found")
 
@@ -315,7 +317,7 @@ class VercelSiteTests(unittest.TestCase):
             )
 
     def test_video_playback_in_every_category(self):
-        categories = ("commercial", "real-estate", "portraits", "concerts", "events")
+        categories = ("commercial", "real-estate", "portraits", "concerts", "events", "automotive", "couple", "london")
         for extension in ("mp4", "webm"):
             self.inject_media({
                 category: [["Test clip", f"__test__/clip.{extension}",

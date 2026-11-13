@@ -45,7 +45,8 @@ const collections = {
       ["Live Music 12","images/galleries/concerts/concerts-12.webp"],
       ["Live Music 13","images/galleries/concerts/concerts-13.webp"],
       ["Live Music 14","images/galleries/concerts/concerts-14.webp"],
-      ["Live Music 15","images/galleries/concerts/concerts-15.webp"]
+      ["Live Music 15","images/galleries/concerts/concerts-15.webp"],
+      ["Live Music 16","images/galleries/concerts/concerts-16.webp"]
     ]
   },
   "events": {
@@ -56,6 +57,21 @@ const collections = {
   "commercial": {
     title: "Commercial",
     description: "Brand, product and business imagery made to help companies stand out.",
+    media: []
+  },
+  "automotive": {
+    title: "Automotive",
+    description: "Cars, details and motion, captured with precision and style.",
+    media: []
+  },
+  "couple": {
+    title: "Couple",
+    description: "Shared moments and connections, captured naturally.",
+    media: []
+  },
+  "london": {
+    title: "London",
+    description: "Street scenes, landmarks and everyday moments around London.",
     media: []
   }
 };

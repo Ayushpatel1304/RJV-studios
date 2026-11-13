@@ -108,7 +108,7 @@
 
   /* Portfolio */
   .filters { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 32px; }
-  .filters span {
+  .filters a {
     font-size: .82rem; padding: 8px 18px; border-radius: 999px;
     border: 1px solid var(--line); color: var(--muted);
   }
@@ -145,6 +145,10 @@
   .t4::before { background-image: linear-gradient(135deg, #20382f, #0c1511); }
   .t5::before { background-image: linear-gradient(135deg, #3a2a1c, #140e08); }
   .t6::before { background-image: linear-gradient(135deg, #2b2540, #100d19); }
+
+  .tile.automotive::before { background-image: linear-gradient(135deg, #39444d, #14191e); }
+  .tile.couple::before { background-image: linear-gradient(135deg, #5a3541, #23131a); }
+  .tile.london::before { background-image: linear-gradient(135deg, #31424c, #10181f); }
 
   /* Process */
   .process { background: var(--bg-alt); }
@@ -248,8 +252,8 @@
   .tile:hover .label h3::after { opacity: 1; transform: translateX(0); }
 
   /* Filters */
-  .filters span { transition: all .25s ease; cursor: pointer; }
-  .filters span:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+  .filters a { transition: all .25s ease; cursor: pointer; }
+  .filters a:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
 
   /* Process steps */
   .step { transition: transform .3s ease, border-color .3s ease; }

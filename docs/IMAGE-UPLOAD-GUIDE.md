@@ -7,7 +7,7 @@
 
 ## Photos and videos in every category
 
-Commercial, Real Estate, Portraits, Concerts and Events each support any mixture of photos and videos. There is **no six-item limit** or category restriction.
+Commercial, Real Estate, Portraits, Concerts, Events, Automotive, Couple and London each support any mixture of photos and videos. There is **no six-item limit** or category restriction.
 
 The gallery displays every entry listed in the matching category's `media` array in `assets/js/gallery.js`. The current Concerts and Real Estate collections include the uploaded photographs. Other collections stay empty until media files are uploaded and entries are added; there is no fixed maximum.
 
@@ -21,6 +21,9 @@ The gallery displays every entry listed in the matching category's `media` array
 `images/backgrounds/portfolio/portraits-cover.webp`
 `images/backgrounds/portfolio/concerts-cover.webp`
 `images/backgrounds/portfolio/events-cover.webp`
+`images/backgrounds/portfolio/automotive-cover.webp`
+`images/backgrounds/portfolio/couple-cover.webp`
+`images/backgrounds/portfolio/london-cover.webp`
 
 ### Gallery photos and videos
 Upload each file into its matching category folder:
@@ -30,6 +33,9 @@ Upload each file into its matching category folder:
 - `images/galleries/portraits/`
 - `images/galleries/concerts/`
 - `images/galleries/events/`
+- `images/galleries/automotive/`
+- `images/galleries/couple/`
+- `images/galleries/london/`
 
 Then add an entry for each file to that category's `media` array in `assets/js/gallery.js`. For example:
 

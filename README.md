@@ -31,7 +31,10 @@ RJV-studios/
         ├── real-estate/          # Property, interiors and architecture
         ├── portraits/            # Headshots and portrait sessions
         ├── concerts/             # Concerts and live music
-        └── events/               # Events and celebrations
+        ├── events/               # Events and celebrations
+        ├── automotive/           # Cars and automotive work
+        ├── couple/               # Couple sessions
+        └── london/               # London photography and video
 ```
 
 ## 2. Homepage sections
@@ -61,12 +64,15 @@ Upload the following files to `images/backgrounds/portfolio/`:
 - `concerts-cover.webp`
 - `events-cover.webp`
 - `commercial-cover.webp`
+- `automotive-cover.webp`
+- `couple-cover.webp`
+- `london-cover.webp`
 
 These are optional separate crops for the small homepage cards. Set their paths in `assets/css/styles.css` after uploading them. Currently, the single real-estate card uses the uploaded real-estate cover and the concert card uses the first concert photograph. Other cards use gradients until covers are supplied.
 
 ## 4. How to add gallery photos and videos
 
-All five categories — Commercial, Real Estate, Portraits, Concerts and Events — support photos, videos, or any mixture of both.
+All eight categories — Commercial, Real Estate, Portraits, Concerts, Events, Automotive, Couple and London — support photos, videos, or any mixture of both.
 
 1. Upload your files to the matching folder inside `images/galleries/`. These existing folders hold both photos and videos.
 2. Add an entry to that category's `media` array in `assets/js/gallery.js`. Uploading a file alone does not list it in the gallery.
