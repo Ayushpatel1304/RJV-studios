@@ -11,14 +11,15 @@
 <link rel="stylesheet" href="assets/css/styles.css">
 <link rel="stylesheet" href="assets/css/gallery.css">
 </head>
-<body>
+<body class="gallery-page">
 <header>
   <div class="container nav">
     <a href="index.html" class="logo">RJV<span>.</span>Studios</a>
-    <nav class="nav-links" aria-label="Main navigation">
+    <button type="button" id="menu-toggle" class="burger" aria-label="Toggle menu" aria-expanded="false" aria-controls="site-navigation">☰</button>
+    <nav id="site-navigation" class="nav-links" aria-label="Main navigation">
       <a href="index.html#work">Portfolio</a>
       <a href="index.html#about">About</a>
-      <a class="btn" href="index.html#contact">Book a Shoot</a>
+      <a class="btn btn-primary" href="index.html#contact">Book a Shoot</a>
     </nav>
   </div>
 </header>
@@ -41,12 +42,13 @@
 </main>
 <footer><div class="container foot"><span>© 2026 RJV Studios · A Walker Visuals brand</span><span>Photography · Video · Media</span></div></footer>
 
-<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Expanded photograph">
+<div class="lightbox" id="lightbox" role="dialog" aria-hidden="true" aria-modal="true" aria-label="Expanded photograph">
   <button class="close" id="close-lightbox" aria-label="Close">×</button>
   <button class="prev" id="prev-photo" aria-label="Previous photo">‹</button>
-  <img id="lightbox-image" src="" alt="">
+  <img id="lightbox-image" alt="">
   <button class="next" id="next-photo" aria-label="Next photo">›</button>
 </div>
+<script src="assets/js/main.js" defer></script>
 <script src="assets/js/gallery.js" defer></script>
 </body>
 </html>

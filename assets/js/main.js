@@ -1,11 +1,25 @@
 /* RJV STUDIOS — shared site interactions */
 document.addEventListener("DOMContentLoaded", () => {
   const menuToggle = document.getElementById("menu-toggle");
-  const navLinks = document.querySelectorAll(".nav-links a");
-  if (menuToggle) {
-    navLinks.forEach(link => link.addEventListener("click", () => {
-      menuToggle.checked = false;
-    }));
+  const navigation = document.getElementById("site-navigation");
+  if (menuToggle && navigation) {
+    const setMenuOpen = open => {
+      menuToggle.setAttribute("aria-expanded", String(open));
+      navigation.classList.toggle("is-open", open);
+    };
+    menuToggle.addEventListener("click", () => {
+      setMenuOpen(menuToggle.getAttribute("aria-expanded") !== "true");
+    });
+    navigation.querySelectorAll("a").forEach(link => {
+      link.addEventListener("click", () => setMenuOpen(false));
+    });
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape" && menuToggle.getAttribute("aria-expanded") === "true") {
+        setMenuOpen(false);
+        menuToggle.focus();
+      }
+    });
+    window.matchMedia("(max-width: 720px)").addEventListener("change", () => setMenuOpen(false));
   }
 
   // Keep phone numbers to digits and commonly used international phone characters.

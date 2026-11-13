@@ -15,15 +15,14 @@
 <header>
   <div class="container nav">
     <a href="#home" class="logo">RJV<span>.</span>Studios</a>
-    <input type="checkbox" id="menu-toggle">
-    <label for="menu-toggle" class="burger" aria-label="Toggle menu">☰</label>
-    <ul class="nav-links">
-      <li><a href="#services">Services</a></li>
-      <li><a href="#work">Work</a></li>
-      <li><a href="#process">Process</a></li>
-      <li><a href="#about">About</a></li>
-      <li><a href="#contact" class="btn btn-primary">Book a Shoot</a></li>
-    </ul>
+    <button type="button" id="menu-toggle" class="burger" aria-label="Toggle menu" aria-expanded="false" aria-controls="site-navigation">☰</button>
+    <nav id="site-navigation" class="nav-links" aria-label="Main navigation">
+      <a href="#services">Services</a>
+      <a href="#work">Work</a>
+      <a href="#process">Process</a>
+      <a href="#about">About</a>
+      <a href="#contact" class="btn btn-primary">Book a Shoot</a>
+    </nav>
   </div>
 </header>
 
@@ -171,14 +170,14 @@
           <li><span>contact</span> +44 7350530861 </li>
         </ul>
       </div>
-      <!-- Formspree: replace YOUR_FORM_ID with the endpoint ID from your Formspree dashboard. -->
+      <!-- Submissions go to the studio's configured Formspree endpoint. -->
       <form action="https://formspree.io/f/mljjpqrl" method="POST" accept-charset="UTF-8">
         <div class="row">
           <label for="enquiry-name">Name<input id="enquiry-name" type="text" name="name" autocomplete="name" required></label>
           <label for="enquiry-email">Email<input id="enquiry-email" type="email" name="email" autocomplete="email" required></label>
         </div>
         <div class="row">
-          <label for="enquiry-phone">Contact number<input id="enquiry-phone" type="tel" name="phone" autocomplete="tel" inputmode="tel" pattern="\+?[0-9() -]{6,19}" maxlength="20" title="Use 7–20 characters: digits, an optional leading +, spaces, hyphens or brackets." placeholder="e.g. +44 7700 900000" required></label>
+          <label for="enquiry-phone">Contact number<input id="enquiry-phone" type="tel" name="phone" autocomplete="tel" inputmode="tel" pattern="\+?(?:[\(\) \-]*[0-9]){7,15}[\(\) \-]*" maxlength="20" title="Use 7–15 digits, an optional leading +, spaces, hyphens or brackets (20 characters maximum)." placeholder="e.g. +44 7700 900000" required></label>
           <label for="enquiry-service">Service
             <select id="enquiry-service" name="service" required>
               <option value="" selected disabled>Choose a service</option>

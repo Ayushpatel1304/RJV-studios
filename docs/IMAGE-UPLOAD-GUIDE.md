@@ -9,7 +9,7 @@
 
 There is **no six-photo limit** for any gallery category. You can add as many photographs as you need to Commercial, Real Estate, Portraits, Concerts and Events.
 
-The gallery displays every photo entry listed in the matching category's `photos` array in `assets/js/gallery.js`. The six entries currently shown in each category are starter examples, not a maximum.
+The gallery displays every photo entry listed in the matching category's `photos` array in `assets/js/gallery.js`. The current Concerts and Real Estate collections include the uploaded photographs. Other collections stay empty until photos are uploaded and entries are added; there is no fixed maximum.
 
 ## Recommended upload names
 
@@ -55,4 +55,4 @@ Keep adding entries separated by commas. There is no fixed maximum; the gallery 
 
 ## Updating paths
 
-If you use a different filename, edit the corresponding path in `assets/js/gallery.js` (gallery photos) or `assets/css/styles.css` (backgrounds). File paths are case-sensitive on most hosting platforms.
+After uploading a background, enable its path in `assets/css/styles.css`; hero slots and categories without covers use gradients by default. If you use a different filename, edit the corresponding path in `assets/js/gallery.js` (gallery photos) or `assets/css/styles.css` (backgrounds). File paths are case-sensitive on most hosting platforms.
