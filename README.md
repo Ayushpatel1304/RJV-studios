@@ -48,7 +48,7 @@ Background images are intentionally kept separate from customer gallery photogra
 1. Open `images/backgrounds/hero/`.
 2. Upload five images named `hero-01.webp` through `hero-05.webp`.
 3. Use landscape images, ideally 1920×1080 or larger.
-4. The slideshow is already connected in `assets/css/styles.css`.
+4. In `assets/css/styles.css`, replace each `.s1` through `.s5` gradient with the matching `url("../../images/backgrounds/hero/hero-01.webp")`, etc. The default gradients avoid broken requests while these optional files are absent.
 
 ### Homepage portfolio cards
 Upload the following files to `images/backgrounds/portfolio/`:
@@ -61,7 +61,7 @@ Upload the following files to `images/backgrounds/portfolio/`:
 - `portraits-cover-02.webp`
 - `real-estate-cover-02.webp`
 
-These are separate crops for the small homepage cards. Change their paths or filenames in `assets/css/styles.css` if needed.
+These are optional separate crops for the small homepage cards. Set their paths in `assets/css/styles.css` after uploading them. Currently, the real-estate cards share the uploaded real-estate cover and the concert card uses the first concert photograph. Other cards use gradients until covers are supplied.
 
 ### Other page-section backgrounds
 The `images/backgrounds/sections/` folder is reserved for future images behind the Services, About or Contact sections. Add images there and reference them from `assets/css/styles.css` when you decide to use them.
@@ -71,14 +71,14 @@ The `images/backgrounds/sections/` folder is reserved for future images behind t
 1. Open the matching folder inside `images/galleries/`.
 2. Upload images using the filenames below, or edit `assets/js/gallery.js` to match your filenames.
 3. Use compressed `.webp` or `.jpg` images. Keep the original high-resolution files backed up separately.
-4. Commit the changes. The gallery page reads the local image paths automatically.
+4. Commit the changes. The gallery displays every entry listed in `assets/js/gallery.js`; uploading a file alone does not add it to the gallery. Categories with no photo entries show an empty state.
 
 | Category | Example filenames |
 |---|---|
 | Commercial | `commercial-01.webp` to `commercial-06.webp` |
 | Real Estate | `real-estate-01.webp` to `real-estate-06.webp` |
 | Portraits | `portrait-01.webp` to `portrait-06.webp` |
-| Concerts | `concert-01.webp` to `concert-06.webp` |
+| Concerts | `concert-01.webp`, `concerts-02.webp`, `concerts-03.jpg`, then the remaining uploaded `concerts-*` files |
 | Events | `event-01.webp` to `event-06.webp` |
 
 Add more photos by copying a photo entry in `assets/js/gallery.js` and changing its caption and file path.
@@ -101,6 +101,10 @@ If using a custom domain, configure the domain in your hosting provider and add 
 
 ## 7. Important notes
 
-- The contact form in `index.html` is prepared for Formspree. Replace `YOUR_FORM_ID` in the form action with the endpoint ID from your Formspree account before accepting real enquiries. See `docs/FORMSPREE-SETUP.md` for setup steps. The Formspree endpoint is not active until that ID is added.
+- The contact form in `index.html` uses the configured Formspree endpoint. Manage its destination and activation in the studio's Formspree account; update the form action if the endpoint changes.
 - Use only photographs and logos you own or have permission to publish.
 - Keep image filenames lowercase and use hyphens instead of spaces.
+
+## 8. Regression checks
+
+See [Testing](docs/TESTING.md) for browser checks covering gallery assets, mobile navigation, the lightbox and contact-form validation. These development-only checks do not add a build step or runtime dependency to the website.

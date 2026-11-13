@@ -14,62 +14,53 @@ const collections = {
       ["Architectural Lines","images/galleries/real-estate/real-estate-03.webp"],
       ["A Place to Unwind","images/galleries/real-estate/real-estate-04.webp"],
       ["Modern Spaces","images/galleries/real-estate/real-estate-05.webp"],
-      ["The Finishing Touches","images/galleries/real-estate/real-estate-06.webp"]
+      ["The Finishing Touches","images/galleries/real-estate/real-estate-06.webp"],
+      ["Real Estate 07","images/galleries/real-estate/real-estate-07.webp"],
+      ["Real Estate 08","images/galleries/real-estate/real-estate-08.webp"],
+      ["Real Estate 09","images/galleries/real-estate/real-estate-09.webp"]
     ]
   },
   "portraits": {
     title: "Portraits",
     description: "People, personality and expression — thoughtfully photographed.",
-    photos: [
-      ["Portrait Study","images/galleries/portraits/portrait-01.webp"],
-      ["Natural Light","images/galleries/portraits/portrait-02.webp"],
-      ["Character","images/galleries/portraits/portrait-03.webp"],
-      ["Studio Portrait","images/galleries/portraits/portrait-04.webp"],
-      ["In Focus","images/galleries/portraits/portrait-05.webp"],
-      ["The Details","images/galleries/portraits/portrait-06.webp"]
-    ]
+    photos: []
   },
   "concerts": {
     title: "Concerts",
     description: "The energy of live music, from the stage lights to the crowd.",
     photos: [
       ["On Stage","images/galleries/concerts/concert-01.webp"],
-      ["Live Energy","images/galleries/concerts/concert-02.webp"],
-      ["Under the Lights","images/galleries/concerts/concert-03.webp"],
-      ["The Crowd","images/galleries/concerts/concert-04.webp"],
-      ["A Moment in Music","images/galleries/concerts/concert-05.webp"],
-      ["After Dark","images/galleries/concerts/concert-06.webp"]
+      ["Live Energy","images/galleries/concerts/concerts-02.webp"],
+      ["Under the Lights","images/galleries/concerts/concerts-03.jpg"],
+      ["The Crowd","images/galleries/concerts/concerts-04.webp"],
+      ["A Moment in Music","images/galleries/concerts/concerts-05.webp"],
+      ["After Dark","images/galleries/concerts/concerts-06.webp"],
+      ["Live Music 07","images/galleries/concerts/concerts-07.webp"],
+      ["Live Music 08","images/galleries/concerts/concerts-08.webp"],
+      ["Live Music 09","images/galleries/concerts/concerts-09.webp"],
+      ["Live Music 10","images/galleries/concerts/concerts-10.webp"],
+      ["Live Music 11","images/galleries/concerts/concerts-11.jpg"],
+      ["Live Music 12","images/galleries/concerts/concerts-12.webp"],
+      ["Live Music 13","images/galleries/concerts/concerts-13.webp"],
+      ["Live Music 14","images/galleries/concerts/concerts-14.webp"],
+      ["Live Music 15","images/galleries/concerts/concerts-15.webp"]
     ]
   },
   "events": {
     title: "Events",
     description: "Real moments and thoughtful details from celebrations and special occasions.",
-    photos: [
-      ["The Celebration","images/galleries/events/event-01.webp"],
-      ["The Details","images/galleries/events/event-02.webp"],
-      ["Together","images/galleries/events/event-03.webp"],
-      ["The Venue","images/galleries/events/event-04.webp"],
-      ["A Special Moment","images/galleries/events/event-05.webp"],
-      ["Evening Atmosphere","images/galleries/events/event-06.webp"]
-    ]
+    photos: []
   },
   "commercial": {
     title: "Commercial",
     description: "Brand, product and business imagery made to help companies stand out.",
-    photos: [
-      ["Brand Story","images/galleries/commercial/commercial-01.webp"],
-      ["Product Details","images/galleries/commercial/commercial-02.webp"],
-      ["Business in Focus","images/galleries/commercial/commercial-03.webp"],
-      ["Campaign Image","images/galleries/commercial/commercial-04.webp"],
-      ["Creative Direction","images/galleries/commercial/commercial-05.webp"],
-      ["The Final Frame","images/galleries/commercial/commercial-06.webp"]
-    ]
+    photos: []
   }
 };
 
 const params = new URLSearchParams(window.location.search);
 const key = params.get("category") || "concerts";
-const collection = collections[key];
+const collection = Object.hasOwn(collections, key) ? collections[key] : null;
 const title = document.getElementById("gallery-title");
 const description = document.getElementById("gallery-description");
 const grid = document.getElementById("gallery-grid");
@@ -81,6 +72,7 @@ if (collection) {
   title.textContent = collection.title;
   description.textContent = collection.description;
   count.textContent = collection.photos.length + (collection.photos.length === 1 ? " image" : " images");
+  if (collection.photos.length === 0) empty.style.display = "block";
   collection.photos.forEach(([caption, src], index) => {
     const figure = document.createElement("figure");
     figure.className = "photo";
@@ -88,17 +80,23 @@ if (collection) {
     img.src = src;
     img.alt = caption;
     img.loading = "lazy";
+    const openButton = document.createElement("button");
+    openButton.type = "button";
+    openButton.className = "photo-open";
+    openButton.setAttribute("aria-label", "Open " + caption);
     img.addEventListener("error", () => {
+      openButton.disabled = true;
       figure.classList.add("image-missing");
       img.removeAttribute("src");
-      img.alt = caption + " — add the image file to " + src;
+      img.alt = caption + " — image unavailable";
     }, { once: true });
     const figcaption = document.createElement("figcaption");
     const category = document.createElement("span");
     category.textContent = collection.title;
     figcaption.append(category, document.createTextNode(caption));
-    figure.append(img, figcaption);
-    figure.addEventListener("click", () => {
+    openButton.appendChild(img);
+    figure.append(openButton, figcaption);
+    openButton.addEventListener("click", () => {
       if (img.complete && img.naturalWidth > 0) openLightbox(index);
     });
     grid.appendChild(figure);
@@ -111,35 +109,69 @@ if (collection) {
 }
 
 let activeIndex = 0;
+let previousFocus = null;
+let previousOverflow = "";
 const lightbox = document.getElementById("lightbox");
 const lightboxImage = document.getElementById("lightbox-image");
+const closeButton = document.getElementById("close-lightbox");
+const previousButton = document.getElementById("prev-photo");
+const nextButton = document.getElementById("next-photo");
+const pageContent = document.querySelectorAll("header, main, footer");
 function openLightbox(index) {
-  if (!collection) return;
+  if (!collection || collection.photos.length === 0) return;
   activeIndex = index;
   const [caption, src] = collection.photos[activeIndex];
   lightboxImage.src = src;
   lightboxImage.alt = caption;
-  lightbox.classList.add("open");
-  document.body.style.overflow = "hidden";
+  if (!lightbox.classList.contains("open")) {
+    previousFocus = document.activeElement;
+    previousOverflow = document.body.style.overflow;
+    lightbox.classList.add("open");
+    lightbox.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+    pageContent.forEach(element => { element.inert = true; });
+    closeButton.focus();
+  }
 }
 function closeLightbox() {
+  if (!lightbox.classList.contains("open")) return;
   lightbox.classList.remove("open");
-  document.body.style.overflow = "";
+  lightbox.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = previousOverflow;
+  pageContent.forEach(element => { element.inert = false; });
+  previousFocus?.focus();
 }
 function movePhoto(step) {
-  if (!collection) return;
+  if (!collection || collection.photos.length === 0) return;
   activeIndex = (activeIndex + step + collection.photos.length) % collection.photos.length;
   openLightbox(activeIndex);
 }
-document.getElementById("close-lightbox").addEventListener("click", closeLightbox);
-document.getElementById("prev-photo").addEventListener("click", () => movePhoto(-1));
-document.getElementById("next-photo").addEventListener("click", () => movePhoto(1));
+closeButton.addEventListener("click", closeLightbox);
+previousButton.addEventListener("click", () => movePhoto(-1));
+nextButton.addEventListener("click", () => movePhoto(1));
 lightbox.addEventListener("click", event => {
   if (event.target === lightbox) closeLightbox();
 });
 document.addEventListener("keydown", event => {
   if (!lightbox.classList.contains("open")) return;
   if (event.key === "Escape") closeLightbox();
-  if (event.key === "ArrowLeft") movePhoto(-1);
-  if (event.key === "ArrowRight") movePhoto(1);
+  if (event.key === "ArrowLeft") {
+    event.preventDefault();
+    movePhoto(-1);
+  }
+  if (event.key === "ArrowRight") {
+    event.preventDefault();
+    movePhoto(1);
+  }
+  if (event.key === "Tab") {
+    const first = closeButton;
+    const last = nextButton;
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
 });
