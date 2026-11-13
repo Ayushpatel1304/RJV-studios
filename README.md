@@ -88,6 +88,8 @@ Only add entries for files you have uploaded. MP4 (H.264/AAC) is recommended for
 
 Videos show a play button and open in the gallery viewer with native playback controls. Thumbnails stay paused and muted. Closing the viewer or changing items stops playback. The counter includes both photos and videos, and empty categories show an empty state. There is no fixed item limit.
 
+Galleries use a responsive masonry layout: photos and videos retain their original proportions and arrange at different heights, with three columns on desktop, two on tablets and one on phones.
+
 The first value supplies accessibility text for images and player controls. Individual files have no visible titles or descriptions. See [the upload guide](docs/IMAGE-UPLOAD-GUIDE.md) for more examples and export guidance.
 
 ## 5. Where to edit the website
