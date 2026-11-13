@@ -1,6 +1,6 @@
 # RJV Studios — Photography & Video Portfolio
 
-A responsive, static photography and videography portfolio for RJV Studios, hosted on Vercel. The site uses plain HTML, CSS and JavaScript. A dependency-free Node.js script packages the public website files for deployment; no framework, npm install or application server is required.
+A responsive, static photography and videography portfolio for RJV Studios, hosted on Vercel. The site uses plain HTML, CSS and JavaScript. A Node.js build uses Sharp to generate responsive WebP images and package the public website files for deployment. The deployed site has no framework or application server.
 
 ## 1. Project structure
 
@@ -11,7 +11,9 @@ RJV-studios/
 ├── README.md                     # Project overview and setup guide
 ├── LICENSE
 ├── vercel.json                  # Vercel static hosting and build settings
-├── scripts/build.mjs            # Copies website files into dist/
+├── scripts/build.mjs            # Packages the site and optimizes images into dist/
+├── package.json                 # Pinned build-time image dependency
+├── package-lock.json            # Reproducible dependency install
 ├── tests/test_site.py            # Browser checks against the deployment output
 ├── assets/
 │   ├── css/
@@ -21,11 +23,9 @@ RJV-studios/
 │       ├── main.js               # Shared navigation interactions
 │       └── gallery.js            # Gallery categories, photos, videos and lightbox
 └── images/
-    ├── branding/                 # Logos and brand assets
     ├── backgrounds/
     │   ├── hero/                 # Homepage slideshow images (5 slots)
-    │   ├── portfolio/            # Homepage category-card cover images
-    │   └── sections/             # Optional section background images
+    │   └── portfolio/            # Homepage category-card cover images
     └── galleries/
         ├── commercial/           # Commercial and product photography
         ├── real-estate/          # Property, interiors and architecture
@@ -36,7 +36,7 @@ RJV-studios/
 
 ## 2. Homepage sections
 
-- **Hero:** brand statement, calls to action and rotating background slideshow.
+- **Hero:** brand statement, calls to action and background slideshow on desktop (a static background on phones).
 - **Services:** commercial, real estate, portraits, concerts, events and bespoke work.
 - **Portfolio:** category cards linking to the relevant gallery.
 - **Process:** enquiry, planning, shoot and delivery.
@@ -63,9 +63,6 @@ Upload the following files to `images/backgrounds/portfolio/`:
 - `commercial-cover.webp`
 
 These are optional separate crops for the small homepage cards. Set their paths in `assets/css/styles.css` after uploading them. Currently, the single real-estate card uses the uploaded real-estate cover and the concert card uses the first concert photograph. Other cards use gradients until covers are supplied.
-
-### Other page-section backgrounds
-The `images/backgrounds/sections/` folder is reserved for future images behind the Services, About or Contact sections. Add images there and reference them from `assets/css/styles.css` when you decide to use them.
 
 ## 4. How to add gallery photos and videos
 
@@ -112,11 +109,11 @@ Connect this repository to your Vercel project and use these settings:
 |---|---|
 | Root Directory | Repository root |
 | Framework Preset | Other |
-| Install Command | Disabled (empty) |
+| Install Command | `npm ci` |
 | Build Command | `node scripts/build.mjs` |
 | Output Directory | `dist` |
 
-`vercel.json` defines the framework, install command, build command and output directory for deployments. The build script copies only `index.html`, `gallery.html`, `assets/` and `images/` into a fresh `dist/` directory. Tests, documentation and local settings stay outside the deployed site. Existing `gallery.html?category=...` links remain supported.
+`vercel.json` defines the framework, install command, build command and output directory for deployments. The build script copies only `index.html`, `gallery.html`, `assets/` and `images/` into a fresh `dist/` directory, generates responsive images under `dist/assets/media/`, and writes their dimensions and paths into a generated media manifest. It also rewrites CSS background paths to use optimized covers. Tests, documentation and local settings stay outside the deployed site. Existing `gallery.html?category=...` links remain supported.
 
 For an existing Vercel project, connect this GitHub repository under **Settings → Git** and use `main` as the production branch. Commits to the pull-request branch can be reviewed as Vercel previews; merge the pull request to deploy the changes to production. Manage custom domains in the Vercel project's **Settings → Domains**, using the DNS records Vercel provides.
 
@@ -124,14 +121,15 @@ See [Vercel build configuration](https://vercel.com/docs/builds/configure-a-buil
 
 ### Local preview
 
-Use Node.js 22+ to prepare the same files Vercel serves, then start a local static server:
+Use Node.js 22.12+ to prepare the same files Vercel serves, then start a local static server:
 
 ```sh
-node scripts/build.mjs
+npm ci
+npm run build
 python3 -m http.server 8000 --directory dist
 ```
 
-Open `http://localhost:8000`. Re-run the build after changing the source files.
+Open `http://localhost:8000`. Re-run the build after changing the source files. Generated files stay in ignored `dist/`; do not edit or commit them. Image derivatives are cached locally under `node_modules/.cache/rjv-media` using content hashes, so unchanged uploads do not need re-encoding on each local build.
 
 ## 7. Important notes
 
@@ -142,3 +140,9 @@ Open `http://localhost:8000`. Re-run the build after changing the source files.
 ## 8. Regression checks
 
 See [Testing](docs/TESTING.md) for browser checks covering gallery assets, MP4/WebM playback across all categories, mobile navigation, the lightbox and contact-form validation. The checks build and serve the Vercel deployment output locally. Python and Playwright are development-only dependencies and are not installed during Vercel builds.
+
+## 9. Image performance
+
+Keep using original upload paths in `assets/js/gallery.js` and `assets/css/styles.css`. The build automatically generates up to three WebP sizes (480, 960 and 1920 pixels wide, without upscaling). Uploaded originals remain unchanged. Galleries load responsive previews with reserved dimensions to keep the masonry layout stable; the viewer loads a larger version only when opened. Hashed image filenames allow long-lived browser caching without stale images after an upload changes.
+
+Videos with posters wait until opened before loading video data. Videos without posters request thumbnail metadata only near the viewport. For a fast video gallery, upload lightweight poster images alongside web-optimized MP4/WebM files.

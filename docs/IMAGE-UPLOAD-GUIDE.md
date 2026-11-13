@@ -66,3 +66,7 @@ Keep adding entries separated by commas. The gallery and viewer include all entr
 ## Updating paths
 
 After uploading a background, enable its path in `assets/css/styles.css`; hero slots and categories without covers use gradients by default. If you use a different filename, edit the corresponding path in `assets/js/gallery.js` (gallery photos/videos) or `assets/css/styles.css` (backgrounds). File paths are case-sensitive on most hosting platforms.
+
+## Automatic optimization
+
+Run `npm ci` once, then `npm run build` after uploads; Vercel runs these steps automatically. The build creates responsive WebP variants and records image dimensions so photos do not jump around as they load. Keep original file paths in the gallery configuration and CSS; the generated site substitutes compact preview/viewer versions. Originals are preserved. Do not add generated `dist/assets/media/` paths to the source configuration.

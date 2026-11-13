@@ -71,6 +71,40 @@ const count = document.getElementById("media-count");
 const mediaItems = collection?.media || [];
 const isVideo = src => /\.(mp4|webm|ogv|ogg|m4v)(?:[?#]|$)/i.test(src);
 
+const imageMap = window.RJV_MEDIA || {};
+const previewSizes = "(max-width: 560px) calc(100vw - 50px), (max-width: 850px) calc(50vw - 33px), (max-width: 1180px) calc(33.333vw - 28px), 365px";
+function imageVariant(src, minimumWidth = 960) {
+  const image = imageMap[src];
+  return image && (image.variants.find(item => item.width >= minimumWidth) || image.variants.at(-1));
+}
+function setImage(image, src, sizes) {
+  const info = imageMap[src];
+  image.dataset.source = src;
+  image.decoding = "async";
+  image.removeAttribute("srcset");
+  image.removeAttribute("sizes");
+  if (info) {
+    image.width = info.width;
+    image.height = info.height;
+    image.style.aspectRatio = `${info.width} / ${info.height}`;
+    image.sizes = sizes;
+    image.srcset = info.variants.map(item => `${item.src} ${item.width}w`).join(", ");
+    image.src = imageVariant(src).src;
+  } else {
+    image.removeAttribute("width");
+    image.removeAttribute("height");
+    image.style.removeProperty("aspect-ratio");
+    image.src = src;
+  }
+}
+const videoObserver = "IntersectionObserver" in window ? new IntersectionObserver(entries => {
+  for (const entry of entries) {
+    if (!entry.isIntersecting) continue;
+    entry.target.src = entry.target.dataset.videoSource;
+    videoObserver.unobserve(entry.target);
+  }
+}, { rootMargin: "300px" }) : null;
+
 if (collection) {
   document.title = collection.title + " Gallery | RJV Studios";
   title.textContent = collection.title;
@@ -92,12 +126,16 @@ if (collection) {
     openButton.className = "media-open";
     openButton.setAttribute("aria-label", (video ? "Play " : "Open ") + altText);
     if (video) {
-      preview.preload = "metadata";
+      preview.preload = poster ? "none" : "metadata";
       preview.muted = true;
       preview.playsInline = true;
       preview.tabIndex = -1;
       preview.setAttribute("aria-hidden", "true");
-      if (poster) preview.poster = poster;
+      if (poster) {
+        preview.poster = imageVariant(poster)?.src || poster;
+        const dimensions = imageMap[poster];
+        if (dimensions) preview.style.aspectRatio = `${dimensions.width} / ${dimensions.height}`;
+      }
       const playIcon = document.createElement("span");
       playIcon.className = "video-play";
       playIcon.textContent = "▶︎";
@@ -105,7 +143,8 @@ if (collection) {
       openButton.appendChild(playIcon);
     } else {
       preview.alt = altText;
-      preview.loading = "lazy";
+      preview.loading = index === 0 ? "eager" : "lazy";
+      if (index === 0) preview.fetchPriority = "high";
     }
     preview.addEventListener("error", () => {
       openButton.disabled = true;
@@ -113,7 +152,11 @@ if (collection) {
       figure.classList.add("media-missing");
       if (!video) preview.alt = altText + " — image unavailable";
     }, { once: true });
-    preview.src = src;
+    if (!video) setImage(preview, src, previewSizes);
+    else if (!poster && videoObserver) {
+      preview.dataset.videoSource = src;
+      videoObserver.observe(preview);
+    } else preview.src = src;
     openButton.appendChild(preview);
     figure.appendChild(openButton);
     openButton.addEventListener("click", () => {
@@ -140,6 +183,7 @@ const previousButton = document.getElementById("prev-media");
 const nextButton = document.getElementById("next-media");
 const pageContent = document.querySelectorAll("header, main, footer");
 function stopVideo() {
+  if (!lightboxVideo.hasAttribute("src")) return;
   lightboxVideo.pause();
   lightboxVideo.removeAttribute("src");
   lightboxVideo.load();
@@ -156,15 +200,16 @@ function openLightbox(index, opener = document.activeElement) {
   lightbox.classList.toggle("showing-video", video);
   lightbox.setAttribute("aria-label", video ? "Expanded video" : "Expanded photograph");
   if (video) {
+    lightboxImage.removeAttribute("srcset");
     lightboxImage.removeAttribute("src");
     lightboxVideo.setAttribute("aria-label", altText);
-    if (poster) lightboxVideo.poster = poster;
+    if (poster) lightboxVideo.poster = imageVariant(poster, 1920)?.src || poster;
     else lightboxVideo.removeAttribute("poster");
     lightboxVideo.src = src;
     // Opening a video is a user action; native controls remain available if play is blocked.
     lightboxVideo.play().catch(() => {});
   } else {
-    lightboxImage.src = src;
+    setImage(lightboxImage, src, "(max-width: 1200px) 92vw, 1100px");
     lightboxImage.alt = altText;
   }
   if (!lightbox.classList.contains("open")) {
@@ -180,6 +225,8 @@ function openLightbox(index, opener = document.activeElement) {
 function closeLightbox() {
   if (!lightbox.classList.contains("open")) return;
   stopVideo();
+  lightboxImage.removeAttribute("srcset");
+  lightboxImage.removeAttribute("src");
   lightbox.classList.remove("open");
   lightbox.setAttribute("aria-hidden", "true");
   document.body.style.overflow = previousOverflow;

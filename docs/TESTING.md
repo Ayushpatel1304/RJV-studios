@@ -1,8 +1,9 @@
 # Browser regression checks
 
-Vercel runs the dependency-free Node.js packaging script in `scripts/build.mjs` and publishes `dist/`. For development checks, use Node.js 22+ and Python 3.10+:
+Vercel installs the locked Sharp dependency with `npm ci`, then runs the Node.js image optimization and packaging script in `scripts/build.mjs` and publishes `dist/`. For development checks, use Node.js 22.12+ and Python 3.10+:
 
 ```sh
+npm ci
 python3 -m venv .venv
 . .venv/bin/activate
 pip install -r requirements-dev.txt
@@ -26,6 +27,7 @@ The checks cover:
 
 - A clean, repeatable Vercel build containing only public website files; tests and local settings return 404.
 - The root homepage, existing `.html` gallery links and all uploaded photographs loading successfully.
+- Responsive previews, preserved originals, reserved masonry dimensions under a slow connection, and no original-image downloads when browsing the gallery.
 - Empty and unknown categories, including inherited object-property names.
 - Local asset requests and horizontal layout at phone, tablet and desktop widths.
 - Keyboard and mobile navigation on both pages.

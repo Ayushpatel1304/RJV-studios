@@ -39,6 +39,8 @@ class VercelSiteTests(unittest.TestCase):
         cls.output = ROOT / cls.config["outputDirectory"]
         cls.build_command = shlex.split(cls.config["buildCommand"])
         subprocess.run(cls.build_command, cwd=ROOT, check=True)
+        manifest_script = (cls.output / "assets/js/media-manifest.js").read_text()
+        cls.media_manifest = json.loads(manifest_script.removeprefix("window.RJV_MEDIA = ").strip().removesuffix(";"))
         cls.server = ThreadingHTTPServer(
             ("127.0.0.1", 0), functools.partial(QuietHandler, directory=str(cls.output))
         )
@@ -92,7 +94,7 @@ class VercelSiteTests(unittest.TestCase):
 
     def test_vercel_build_output(self):
         self.assertIsNone(self.config["framework"])
-        self.assertEqual(self.config["installCommand"], "")
+        self.assertEqual(self.config["installCommand"], "npm ci")
         self.assertFalse(self.config["cleanUrls"], "Existing .html gallery links must keep working")
         # Rebuilding removes old output instead of deploying deleted files from a cache.
         stale_file = self.output / "stale-file.txt"
@@ -108,11 +110,20 @@ class VercelSiteTests(unittest.TestCase):
                 with self.subTest(path=path.relative_to(self.output)):
                     self.assertFalse(path.name.startswith("."))
                     source = ROOT / path.relative_to(self.output)
-                    self.assertEqual(
-                        hashlib.sha256(path.read_bytes()).digest(),
-                        hashlib.sha256(source.read_bytes()).digest(),
-                    )
-        for private_path in ("tests/test_site.py", "requirements-dev.txt", "vercel.json", ".git/config"):
+                    relative_path = path.relative_to(self.output).as_posix()
+                    generated = {"assets/js/media-manifest.js"} | {
+                        item["src"] for data in self.media_manifest.values() for item in data["variants"]
+                    }
+                    if relative_path in generated:
+                        self.assertGreater(path.stat().st_size, 0)
+                    elif relative_path.startswith("assets/css/"):
+                        self.assertTrue(source.is_file())
+                    else:
+                        self.assertEqual(
+                            hashlib.sha256(path.read_bytes()).digest(),
+                            hashlib.sha256(source.read_bytes()).digest(),
+                        )
+        for private_path in ("tests/test_site.py", "requirements-dev.txt", "vercel.json", ".git/config", "package-lock.json", "node_modules/sharp/package.json"):
             with self.subTest(path=private_path):
                 response = self.context.request.get(self.base + private_path)
                 self.assertEqual(response.status, 404)
@@ -127,13 +138,65 @@ class VercelSiteTests(unittest.TestCase):
                     for path in (ROOT / "images/galleries" / category).iterdir()
                     if path.suffix.lower() in {".webp", ".jpg", ".jpeg", ".png"}
                 }
-                actual = set(photos.evaluate_all("images => images.map(img => img.getAttribute('src'))"))
+                actual = set(photos.evaluate_all("images => images.map(img => img.dataset.source)"))
                 self.assertEqual(actual, expected)
                 expect(self.page.locator("#media-count")).to_have_text(f"{len(expected)} images")
                 for image in photos.all():
                     image.scroll_into_view_if_needed()
                     expect(image).to_have_js_property("complete", True)
                     self.assertGreater(image.evaluate("img => img.naturalWidth"), 0)
+
+    def test_responsive_images_keep_masonry_stable(self):
+        self.page.set_viewport_size({"width": 390, "height": 844})
+        self.page.add_init_script("""window.layoutShift = 0;
+            new PerformanceObserver(list => {
+                for (const entry of list.getEntries()) {
+                    if (!entry.hadRecentInput) window.layoutShift += entry.value;
+                }
+            }).observe({type: 'layout-shift', buffered: true});""")
+        cdp = self.context.new_cdp_session(self.page)
+        cdp.send("Network.enable")
+        cdp.send("Network.setCacheDisabled", {"cacheDisabled": True})
+        cdp.send("Network.emulateNetworkConditions", {
+            "offline": False, "latency": 150, "downloadThroughput": 250000,
+            "uploadThroughput": 250000,
+        })
+        self.page.goto(self.base + "gallery.html?category=concerts", wait_until="domcontentloaded")
+        images = self.page.locator("#gallery-grid img")
+        before = images.evaluate_all("els => els.map(el => ({height:el.getBoundingClientRect().height,top:el.getBoundingClientRect().top}))")
+        for image in images.all():
+            self.assertGreater(int(image.get_attribute("width")), 0)
+            self.assertGreater(int(image.get_attribute("height")), 0)
+            self.assertTrue(image.get_attribute("srcset"))
+            expect(image).to_have_attribute("decoding", "async")
+            image.evaluate("el => { el.loading = 'eager'; }")
+        self.page.wait_for_function("[...document.querySelectorAll('#gallery-grid img')].every(img => img.complete && img.naturalWidth > 0)")
+        after = images.evaluate_all("els => els.map(el => ({height:el.getBoundingClientRect().height,top:el.getBoundingClientRect().top}))")
+        for original, loaded in zip(before, after):
+            self.assertAlmostEqual(original["height"], loaded["height"], delta=1)
+            self.assertAlmostEqual(original["top"], loaded["top"], delta=1)
+        self.assertLess(self.page.evaluate("window.layoutShift"), 0.01)
+
+    def test_gallery_previews_do_not_fetch_original_files(self):
+        requested_images = []
+        self.page.on("request", lambda req: requested_images.append(req.url)
+                     if req.resource_type == "image" else None)
+        self.visit("gallery.html?category=concerts")
+        for image in self.page.locator("#gallery-grid img").all():
+            image.scroll_into_view_if_needed()
+            expect(image).to_have_js_property("complete", True)
+        self.page.locator(".media-open").first.click()
+        full_image = self.page.locator("#lightbox-image")
+        expect(full_image).to_have_js_property("complete", True)
+        self.assertGreater(full_image.evaluate("img => img.naturalWidth"), 0)
+        self.assertTrue(requested_images)
+        self.assertTrue(all("/assets/media/" in url for url in requested_images), requested_images)
+        originals = sum((ROOT / path).stat().st_size for path in self.media_manifest
+                        if path.startswith("images/galleries/concerts/"))
+        previews = sum((self.output / data["variants"][0]["src"]).stat().st_size
+                       for path, data in self.media_manifest.items()
+                       if path.startswith("images/galleries/concerts/"))
+        self.assertLess(previews, originals * 0.2)
 
     def test_empty_and_invalid_categories(self):
         for category in ("portraits", "events", "commercial", "unknown", "__proto__", "constructor", "toString"):
@@ -205,13 +268,13 @@ class VercelSiteTests(unittest.TestCase):
         expect(close).to_be_focused()
         self.assertTrue(self.page.locator("main").evaluate("el => el.inert"))
         self.assertEqual(self.page.evaluate("document.body.style.overflow"), "hidden")
-        images = self.page.locator(".media-item img").evaluate_all("els => els.map(el => el.getAttribute('src'))")
+        images = self.page.locator(".media-item img").evaluate_all("els => els.map(el => el.dataset.source)")
         self.page.keyboard.press("ArrowLeft")
-        expect(self.page.locator("#lightbox-image")).to_have_attribute("src", images[-1])
+        expect(self.page.locator("#lightbox-image")).to_have_attribute("data-source", images[-1])
         self.page.keyboard.press("ArrowRight")
-        expect(self.page.locator("#lightbox-image")).to_have_attribute("src", images[0])
+        expect(self.page.locator("#lightbox-image")).to_have_attribute("data-source", images[0])
         self.page.get_by_role("button", name="Next item").click()
-        expect(self.page.locator("#lightbox-image")).to_have_attribute("src", images[1])
+        expect(self.page.locator("#lightbox-image")).to_have_attribute("data-source", images[1])
         self.page.keyboard.press("Tab")
         expect(close).to_be_focused()
         self.page.keyboard.press("Shift+Tab")
@@ -267,9 +330,11 @@ class VercelSiteTests(unittest.TestCase):
                     thumbnail = self.page.locator(".media-item video")
                     expect(thumbnail).to_have_js_property("muted", True)
                     expect(thumbnail).to_have_js_property("paused", True)
-                    expect(thumbnail).to_have_attribute("preload", "metadata")
+                    expect(thumbnail).to_have_attribute("preload", "none")
                     expect(thumbnail).to_have_attribute(
-                        "poster", "images/backgrounds/portfolio/real-estate-cover.webp"
+                        "poster", next(item["src"] for item in self.media_manifest[
+                            "images/backgrounds/portfolio/real-estate-cover.webp"
+                        ]["variants"] if item["width"] >= 960)
                     )
                     button = self.page.get_by_role("button", name="Play Test clip")
                     button.click()
