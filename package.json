@@ -10,6 +10,7 @@
     "build": "node scripts/build.mjs"
   },
   "dependencies": {
+    "@vercel/speed-insights": "^2.1.0",
     "sharp": "0.35.5"
   }
 }
