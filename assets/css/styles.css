@@ -82,7 +82,7 @@
   }
   .hero h1 { font-size: clamp(2.6rem, 7vw, 5.2rem); max-width: 14ch; margin-bottom: 24px; }
   .hero h1 em { color: var(--accent); font-style: italic; }
-  .hero p { color: var(--muted); max-width: 560px; font-size: 1.1rem; margin-bottom: 38px; }
+  .hero p { color: var(--text); max-width: 560px; font-size: 1.1rem; margin-bottom: 38px; }
   .hero-actions { display: flex; flex-wrap: wrap; gap: 14px; }
 
   /* Services */
@@ -292,36 +292,30 @@
   .hero-slides::after {
     content: ""; position: absolute; inset: 0; z-index: 2;
     background:
-      linear-gradient(90deg, rgba(11,11,12,.88) 0%, rgba(11,11,12,.55) 55%, rgba(11,11,12,.35) 100%),
+      linear-gradient(90deg, rgba(11,11,12,.88) 0%, rgba(11,11,12,.72) 55%, rgba(11,11,12,.35) 100%),
       linear-gradient(to top, var(--bg) 0%, transparent 28%);
   }
   .slide {
     position: absolute; inset: 0;
     background-size: cover; background-position: center;
     opacity: 0;
-    /* 5 slides x 6s each = 30s loop. If you change the slide count,
-       change 30s below to (number of slides x 6s) and update the delays. */
-    animation: slideFade 30s infinite;
+    /* Four slides, six seconds apart. Negative delays start the loop immediately. */
+    animation: slideFade 24s infinite;
   }
   .s1 { animation-delay: 0s; }
-  .s2 { animation-delay: 6s; }
-  .s3 { animation-delay: 12s; }
-  .s4 { animation-delay: 18s; }
-  .s5 { animation-delay: 24s; }
+  .s2 { animation-delay: -18s; }
+  .s3 { animation-delay: -12s; }
+  .s4 { animation-delay: -6s; }
   @keyframes slideFade {
-    0%   { opacity: 0; }
-    4%   { opacity: 1; }
-    20%  { opacity: 1; }
-    24%  { opacity: 0; }
-    100% { opacity: 0; }
+    0%, 20% { opacity: 1; }
+    25%, 95% { opacity: 0; }
+    100% { opacity: 1; }
   }
-  /* Use gradients until hero photographs are uploaded. To enable a slot, replace
-     its gradient with url("../../images/backgrounds/hero/hero-01.webp"), etc. */
-  .s1 { background-image: linear-gradient(135deg, #1f2c3d, #0d1119); }
-  .s2 { background-image: linear-gradient(135deg, #3d2230, #150b11); }
-  .s3 { background-image: linear-gradient(135deg, #20382f, #0c1511); }
-  .s4 { background-image: linear-gradient(135deg, #3a2a1c, #140e08); }
-  .s5 { background-image: linear-gradient(135deg, #2b2540, #100d19); }
+  /* Hero photographs follow the upload order in images/backgrounds/hero/. */
+  .s1 { background-image: url("../../images/backgrounds/hero/hero-01.webp"); }
+  .s2 { background-image: url("../../images/backgrounds/hero/hero-02.webp"); }
+  .s3 { background-image: url("../../images/backgrounds/hero/hero-03.webp"); }
+  .s4 { background-image: url("../../images/backgrounds/hero/hero-04.webp"); }
 
   /* Use existing assets; other categories retain their gradient until a cover is uploaded. */
   .t2::before { background-image: url("../../images/backgrounds/portfolio/real-estate-cover.webp"); }
@@ -495,6 +489,9 @@ header {
 }
 @media (max-width: 760px) {
   header { -webkit-backdrop-filter: none; backdrop-filter: none; }
-  .slide { animation: none; }
-  .slide.s1 { opacity: 1; }
+  .hero-slides::after {
+    background:
+      linear-gradient(90deg, rgba(11,11,12,.82), rgba(11,11,12,.70)),
+      linear-gradient(to top, var(--bg) 0%, transparent 28%);
+  }
 }
