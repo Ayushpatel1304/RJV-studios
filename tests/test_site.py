@@ -116,7 +116,7 @@ class VercelSiteTests(unittest.TestCase):
                     }
                     if relative_path in generated:
                         self.assertGreater(path.stat().st_size, 0)
-                    elif relative_path.startswith("assets/css/"):
+                    elif relative_path.startswith("assets/css/") or relative_path == "assets/js/gallery.js":
                         self.assertTrue(source.is_file())
                     else:
                         self.assertEqual(
@@ -129,7 +129,7 @@ class VercelSiteTests(unittest.TestCase):
                 self.assertEqual(response.status, 404)
 
     def test_all_uploaded_photographs_are_available(self):
-        for category in ("concerts", "real-estate"):
+        for category in ("concerts", "real-estate", "automotive"):
             with self.subTest(category=category):
                 self.visit("gallery.html?category=" + category)
                 photos = self.page.locator(".media-item img")
@@ -199,7 +199,7 @@ class VercelSiteTests(unittest.TestCase):
         self.assertLess(previews, originals * 0.2)
 
     def test_empty_and_invalid_categories(self):
-        empty_categories = ("portraits", "events", "commercial", "automotive", "couple", "london")
+        empty_categories = ("portraits", "events", "commercial", "couple", "london")
         for category in (*empty_categories, "unknown", "__proto__", "constructor", "toString"):
             with self.subTest(category=category):
                 self.visit("gallery.html?category=" + category)

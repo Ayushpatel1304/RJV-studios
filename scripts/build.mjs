@@ -32,6 +32,36 @@ for (const entry of ["index.html", "gallery.html", "assets", "images"]) {
     filter: source => !basename(source).startsWith(".")
   });
 }
+// Include every categorized upload while preserving curated captions and ordering.
+const uploads = {};
+for (const source of await filesIn(join(root, "images/galleries"))) {
+  if (!/\.(jpe?g|png|webp|gif|avif|mp4|webm|ogv|ogg|m4v)$/i.test(source)) continue;
+  const path = webPath(relative(root, source));
+  const category = path.split("/")[2];
+  (uploads[category] ||= []).push(path);
+}
+for (const paths of Object.values(uploads)) {
+  paths.sort((a, b) => a.localeCompare(b, "en", { numeric: true }));
+}
+const galleryPath = join(output, "assets/js/gallery.js");
+const galleryScript = await readFile(galleryPath, "utf8");
+const discoverUploads = `
+const uploadedMedia = ${JSON.stringify(uploads)};
+for (const [category, paths] of Object.entries(uploadedMedia)) {
+  if (!Object.hasOwn(collections, category)) continue;
+  const collection = collections[category];
+  const listed = new Set(collection.media.map(([, path]) => path));
+  for (const path of paths) {
+    if (listed.has(path)) continue;
+    const caption = path.split("/").at(-1).replace(/\\.[^.]+$/, "").replace(/[-_]+/g, " ");
+    collection.media.push([caption, path]);
+    listed.add(path);
+  }
+}
+`;
+if (!galleryScript.includes("const params =")) throw new Error("Gallery initialization marker missing");
+await writeFile(galleryPath, galleryScript.replace("const params =", discoverUploads + "\nconst params ="));
+
 await mkdir(imageCache, { recursive: true });
 await mkdir(join(output, "assets/media"), { recursive: true });
 

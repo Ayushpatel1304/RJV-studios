@@ -9,7 +9,7 @@
 
 Commercial, Real Estate, Portraits, Concerts, Events, Automotive, Couple and London each support any mixture of photos and videos. There is **no six-item limit** or category restriction.
 
-The gallery displays every entry listed in the matching category's `media` array in `assets/js/gallery.js`. The current Concerts and Real Estate collections include the uploaded photographs. Other collections stay empty until media files are uploaded and entries are added; there is no fixed maximum.
+The deployment build automatically includes supported photos and videos from each category folder. Existing entries in `assets/js/gallery.js` keep their alternative text, posters and ordering; new uploads follow in natural filename order. Empty folders stay empty. Upload into the category folder rather than the repository root.
 
 ## Recommended upload names
 
@@ -37,7 +37,7 @@ Upload each file into its matching category folder:
 - `images/galleries/couple/`
 - `images/galleries/london/`
 
-Then add an entry for each file to that category's `media` array in `assets/js/gallery.js`. For example:
+Push the uploaded files to GitHub and Vercel will include them on the next deployment. Optionally add entries to the category's `media` array in `assets/js/gallery.js` to customize alternative text, order or video posters. For example:
 
 ```js
 media: [
