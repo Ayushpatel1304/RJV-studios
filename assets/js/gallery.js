@@ -49,16 +49,6 @@ const collections = {
       ["Live Music 16","images/galleries/concerts/concerts-16.webp"]
     ]
   },
-  "events": {
-    title: "Events",
-    description: "Real moments and thoughtful details from celebrations and special occasions.",
-    media: []
-  },
-  "commercial": {
-    title: "Commercial",
-    description: "Brand, product and business imagery made to help companies stand out.",
-    media: []
-  },
   "automotive": {
     title: "Automotive",
     description: "Cars, details and motion, captured with precision and style.",
@@ -67,11 +57,6 @@ const collections = {
   "couple": {
     title: "Couple",
     description: "Shared moments and connections, captured naturally.",
-    media: []
-  },
-  "london": {
-    title: "London",
-    description: "Street scenes, landmarks and everyday moments around London.",
     media: []
   }
 };

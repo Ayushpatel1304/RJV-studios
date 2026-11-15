@@ -24,23 +24,20 @@ RJV-studios/
 │       └── gallery.js            # Gallery categories, photos, videos and lightbox
 └── images/
     ├── backgrounds/
-    │   ├── hero/                 # Homepage slideshow images (5 slots)
+    │   ├── hero/                 # Homepage slideshow images (4 slots)
     │   └── portfolio/            # Homepage category-card cover images
     └── galleries/
-        ├── commercial/           # Commercial and product photography
         ├── real-estate/          # Property, interiors and architecture
         ├── portraits/            # Headshots and portrait sessions
         ├── concerts/             # Concerts and live music
-        ├── events/               # Events and celebrations
         ├── automotive/           # Cars and automotive work
-        ├── couple/               # Couple sessions
-        └── london/               # London photography and video
+        └── couple/               # Couple sessions
 ```
 
 ## 2. Homepage sections
 
-- **Hero:** brand statement, calls to action and background slideshow on desktop (a static background on phones).
-- **Services:** commercial, real estate, portraits, concerts, events and bespoke work.
+- **Hero:** brand statement, calls to action and a four-image background slideshow on desktop and phones. Visitors who prefer reduced motion see a static first image.
+- **Services:** real estate, portraits, concerts and bespoke work.
 - **Portfolio:** category cards linking to the relevant gallery.
 - **Process:** enquiry, planning, shoot and delivery.
 - **About:** studio introduction and working approach.
@@ -52,9 +49,9 @@ Background images are intentionally kept separate from the photos and videos in 
 
 ### Hero slideshow
 1. Open `images/backgrounds/hero/`.
-2. Upload five images named `hero-01.webp` through `hero-05.webp`.
+2. Upload four images named `hero-01.webp` through `hero-04.webp`.
 3. Use landscape images, ideally 1920×1080 or larger.
-4. In `assets/css/styles.css`, replace each `.s1` through `.s5` gradient with the matching `url("../../images/backgrounds/hero/hero-01.webp")`, etc. The default gradients avoid broken requests while these optional files are absent.
+4. The existing `.s1` through `.s4` rules in `assets/css/styles.css` use those paths. Replace these files to update the slideshow, or edit the rules if filenames change. The four slides rotate in a 24-second loop.
 
 ### Homepage portfolio cards
 Upload the following files to `images/backgrounds/portfolio/`:
@@ -62,28 +59,25 @@ Upload the following files to `images/backgrounds/portfolio/`:
 - `real-estate-cover.webp`
 - `portraits-cover.webp`
 - `concerts-cover.webp`
-- `events-cover.webp`
-- `commercial-cover.webp`
 - `automotive-cover.webp`
 - `couple-cover.webp`
-- `london-cover.webp`
 
 These are optional separate crops for the small homepage cards. Set their paths in `assets/css/styles.css` after uploading them. Currently, the single real-estate card uses the uploaded real-estate cover and the concert card uses the first concert photograph. Other cards use gradients until covers are supplied.
 
 ## 4. How to add gallery photos and videos
 
-All eight categories — Commercial, Real Estate, Portraits, Concerts, Events, Automotive, Couple and London — support photos, videos, or any mixture of both.
+All five categories — Real Estate, Portraits, Concerts, Automotive and Couple — support photos, videos, or any mixture of both.
 
 1. Upload your files to the matching folder inside `images/galleries/`. These existing folders hold both photos and videos.
-2. Add an entry to that category's `media` array in `assets/js/gallery.js`. Uploading a file alone does not list it in the gallery.
-3. Use `["Alternative text", "path/to/file"]` for a photo or video. Video file extensions are detected automatically. An optional third value supplies a video poster image.
+2. Push the uploaded files to GitHub. The deployment build automatically adds supported files from each category folder to its gallery; no manual entry is required.
+3. Optionally add `["Alternative text", "path/to/file"]` entries to the category's `media` array in `assets/js/gallery.js` to customize accessibility text or ordering. Existing entries appear first; other uploads follow in natural filename order. Video file extensions are detected automatically, and an optional third value supplies a video poster image.
 
 ```js
 media: [
-  ["Event photograph", "images/galleries/events/event-01.webp"],
-  ["Event highlights", "images/galleries/events/highlights.mp4"],
-  ["Behind the scenes", "images/galleries/events/behind-the-scenes.webm",
-    "images/galleries/events/video-poster.webp"]
+  ["Couple photograph", "images/galleries/couple/couple-01.webp"],
+  ["Couple highlights", "images/galleries/couple/highlights.mp4"],
+  ["Behind the scenes", "images/galleries/couple/behind-the-scenes.webm",
+    "images/galleries/couple/video-poster.webp"]
 ]
 ```
 

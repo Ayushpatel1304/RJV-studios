@@ -7,44 +7,41 @@
 
 ## Photos and videos in every category
 
-Commercial, Real Estate, Portraits, Concerts, Events, Automotive, Couple and London each support any mixture of photos and videos. There is **no six-item limit** or category restriction.
+Real Estate, Portraits, Concerts, Automotive and Couple each support any mixture of photos and videos. There is **no six-item limit** or category restriction.
 
 The deployment build automatically includes supported photos and videos from each category folder. Existing entries in `assets/js/gallery.js` keep their alternative text, posters and ordering; new uploads follow in natural filename order. Empty folders stay empty. Upload into the category folder rather than the repository root.
 
 ## Recommended upload names
 
 ### Hero backgrounds
-`images/backgrounds/hero/hero-01.webp` … `hero-05.webp`
+`images/backgrounds/hero/hero-01.webp` … `hero-04.webp`
+
+The four images rotate in a 24-second slideshow on desktop and phones. Visitors who prefer reduced motion see the first image without animation. The existing CSS rules use these filenames; replacing a file updates its slide after deployment.
 
 ### Portfolio card covers
 `images/backgrounds/portfolio/real-estate-cover.webp`
 `images/backgrounds/portfolio/portraits-cover.webp`
 `images/backgrounds/portfolio/concerts-cover.webp`
-`images/backgrounds/portfolio/events-cover.webp`
 `images/backgrounds/portfolio/automotive-cover.webp`
 `images/backgrounds/portfolio/couple-cover.webp`
-`images/backgrounds/portfolio/london-cover.webp`
 
 ### Gallery photos and videos
 Upload each file into its matching category folder:
 
-- `images/galleries/commercial/`
 - `images/galleries/real-estate/`
 - `images/galleries/portraits/`
 - `images/galleries/concerts/`
-- `images/galleries/events/`
 - `images/galleries/automotive/`
 - `images/galleries/couple/`
-- `images/galleries/london/`
 
 Push the uploaded files to GitHub and Vercel will include them on the next deployment. Optionally add entries to the category's `media` array in `assets/js/gallery.js` to customize alternative text, order or video posters. For example:
 
 ```js
 media: [
-  ["Event photograph", "images/galleries/events/event-01.webp"],
-  ["Event highlights", "images/galleries/events/highlights.mp4"],
-  ["Behind the scenes", "images/galleries/events/behind-the-scenes.webm",
-    "images/galleries/events/video-poster.webp"]
+  ["Couple photograph", "images/galleries/couple/couple-01.webp"],
+  ["Couple highlights", "images/galleries/couple/highlights.mp4"],
+  ["Behind the scenes", "images/galleries/couple/behind-the-scenes.webm",
+    "images/galleries/couple/video-poster.webp"]
 ]
 ```
 
@@ -71,7 +68,7 @@ Keep adding entries separated by commas. The gallery and viewer include all entr
 
 ## Updating paths
 
-After uploading a background, enable its path in `assets/css/styles.css`; hero slots and categories without covers use gradients by default. If you use a different filename, edit the corresponding path in `assets/js/gallery.js` (gallery photos/videos) or `assets/css/styles.css` (backgrounds). File paths are case-sensitive on most hosting platforms.
+The hero CSS already uses `hero-01.webp` through `hero-04.webp`. For new portfolio covers or different background filenames, update the corresponding path in `assets/css/styles.css`; categories without covers use gradients. Gallery uploads are discovered automatically from the category folders. If you rename a file that has a custom entry in `assets/js/gallery.js`, update that entry as well. File paths are case-sensitive on most hosting platforms.
 
 ## Automatic optimization
 

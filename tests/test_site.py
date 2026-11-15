@@ -129,7 +129,7 @@ class VercelSiteTests(unittest.TestCase):
                 self.assertEqual(response.status, 404)
 
     def test_all_uploaded_photographs_are_available(self):
-        for category in ("concerts", "real-estate", "automotive"):
+        for category in ("concerts", "real-estate", "automotive", "couple"):
             with self.subTest(category=category):
                 self.visit("gallery.html?category=" + category)
                 photos = self.page.locator(".media-item img")
@@ -199,8 +199,8 @@ class VercelSiteTests(unittest.TestCase):
         self.assertLess(previews, originals * 0.2)
 
     def test_empty_and_invalid_categories(self):
-        empty_categories = ("portraits", "events", "commercial", "couple", "london")
-        for category in (*empty_categories, "unknown", "__proto__", "constructor", "toString"):
+        empty_categories = ("portraits",)
+        for category in (*empty_categories, "events", "commercial", "london", "unknown", "__proto__", "constructor", "toString"):
             with self.subTest(category=category):
                 self.visit("gallery.html?category=" + category)
                 expect(self.page.locator("#empty-state")).to_be_visible()
@@ -317,7 +317,7 @@ class VercelSiteTests(unittest.TestCase):
             )
 
     def test_video_playback_in_every_category(self):
-        categories = ("commercial", "real-estate", "portraits", "concerts", "events", "automotive", "couple", "london")
+        categories = ("real-estate", "portraits", "concerts", "automotive", "couple")
         for extension in ("mp4", "webm"):
             self.inject_media({
                 category: [["Test clip", f"__test__/clip.{extension}",
@@ -396,8 +396,8 @@ class VercelSiteTests(unittest.TestCase):
         expect(first).to_be_focused()
 
     def test_video_decode_failure(self):
-        self.inject_media({"events": [["Test clip", "__test__/clip.mp4"]]})
-        self.visit("gallery.html?category=events")
+        self.inject_media({"couple": [["Test clip", "__test__/clip.mp4"]]})
+        self.visit("gallery.html?category=couple")
         self.page.get_by_role("button", name="Play Test clip").click()
         self.page.route("**/__test__/invalid.mp4", lambda route: route.fulfill(
             content_type="video/mp4", body=b"Invalid video data"
